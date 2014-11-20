@@ -1,0 +1,15 @@
+<script> 
+setInterval(                               //Periodically 
+  function()
+  {
+    window.location = "/analysis"
+  },
+  500);                                    // And do it every 500ms
+</script>
+
+<h1>Results</h1>
+{{ error }}
+{% for df in results %}
+{{df.to_html() | safe}}
+<p>
+{% endfor %}
