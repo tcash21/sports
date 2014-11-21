@@ -9,8 +9,11 @@ from flask import render_template
 import pandas as pd
 application = Flask(__name__)
 
+application.debug=True
+
 @application.route("/index/")
 @application.route("/")
+
 def index():
     results = []
     url = urllib2.urlopen('http://scores.espn.go.com/ncf/scoreboard')
@@ -54,68 +57,69 @@ def index():
                     stat_list.append(stat.div.contents[0])
                 except:
                     stat_list.append(stat.contents[0])
+            
+            first_down_i = stat_list.index('1st Downs')
+            first_downs_a = stat_list[first_down_i + 1]
+            first_downs_b = stat_list[first_down_i + 2]
+            first_downs = {'1st DownsA': first_downs_a, '1st DownsB': first_downs_b}
+            
+            third_down_i = stat_list.index('3rd down efficiency')
+            third_down_a = stat_list[third_down_i + 1]
+            third_down_b = stat_list[third_down_i + 2]
+            third_downs = {'3rd DownsA': third_down_a, '3rd DownsB': third_down_b}
 
-                first_down_i = stat_list.index('1st Downs')
-                first_downs_a = stat_list[first_down_i + 1]
-                first_downs_b = stat_list[first_down_i + 2]
-    	        first_downs = {'1st DownsA': first_downs_a, '1st DownsB': first_downs_b}
-                
-                third_down_i = stat_list.index('3rd down efficiency')
-                third_down_a = stat_list[third_down_i + 1]
-                third_down_b = stat_list[third_down_i + 2]
-                third_downs = {'3rd DownsA': third_down_a, '3rd DownsB': third_down_b}
+            fourth_down_i = stat_list.index('4th down efficiency')
+            fourth_down_a = stat_list[fourth_down_i + 1]
+            fourth_down_b = stat_list[fourth_down_i + 2]
 
-                fourth_down_i = stat_list.index('4th down efficiency')
-                fourth_down_a = stat_list[fourth_down_i + 1]
-                fourth_down_b = stat_list[fourth_down_i + 2]
+            total_yards_i = stat_list.index('Total Yards')
+            total_yards_a = stat_list[total_yards_i+1]
+            total_yards_b = stat_list[total_yards_i+2]
 
-                total_yards_i = stat_list.index('Total Yards')
-                total_yards_a = stat_list[total_yards_i+1]
-                total_yards_b = stat_list[total_yards_i+2]
+            passing_i = stat_list.index('Passing')
+            passing_a = stat_list[passing_i+1]
+            passing_b = stat_list[passing_i+2]
 
-                passing_i = stat_list.index('Passing')
-                passing_a = stat_list[passing_i+1]
-                passing_b = stat_list[passing_i+2]
+            comp_att_i = stat_list.index('Comp-Att')
+            comp_att_a = stat_list[comp_att_i+1]
+            comp_att_b = stat_list[comp_att_i+2]
 
-                comp_att_i = stat_list.index('Comp-Att')
-                comp_att_a = stat_list[comp_att_i+1]
-                comp_att_b = stat_list[comp_att_i+2]
+            rushing_i = stat_list.index('Rushing')
+            rushing_a = stat_list[rushing_i+1]
+            rushing_b = stat_list[rushing_i+2]
 
-                rushing_i = stat_list.index('Rushing')
-                rushing_a = stat_list[rushing_i+1]
-                rushing_b = stat_list[rushing_i+2]
+            rushinga_i = stat_list.index('Rushing Attempts')
+            rushinga_a = stat_list[rushinga_i+1]
+            rushinga_b = stat_list[rushinga_i+2]
 
-                rushinga_i = stat_list.index('Rushing Attempts')
-                rushinga_a = stat_list[rushinga_i+1]
-                rushinga_b = stat_list[rushinga_i+2]
+            yards_per_rush_i = stat_list.index('Yards per rush')
+            yards_per_rush_a = stat_list[yards_per_rush_i+1]
+            yards_per_rush_b = stat_list[yards_per_rush_i+2]
 
-                yards_per_rush_i = stat_list.index('Yards per rush')
-                yards_per_rush_a = stat_list[yards_per_rush_i+1]
-                yards_per_rush_b = stat_list[yards_per_rush_i+2]
+            penalties_i = stat_list.index('Penalties')
+            penalties_a = stat_list[penalties_i+1]
+            penalties_b = stat_list[penalties_i+2]
 
-                penalties_i = stat_list.index('Penalties')
-                penalties_a = stat_list[penalties_i+1]
-                penalties_b = stat_list[penalties_i+2]
+            turnovers_i = stat_list.index('Turnovers')
+            turnovers_a = stat_list[turnovers_i+1]
+            turnovers_b = stat_list[turnovers_i+2]
 
-                turnovers_i = stat_list.index('Turnovers')
-                turnovers_a = stat_list[turnovers_i+1]
-                turnovers_b = stat_list[turnovers_i+2]
+            fumbles_lost_i = stat_list.index('Fumbles lost')
+            fumbles_lost_a = stat_list[fumbles_lost_i+1]
+            fumbles_lost_b = stat_list[fumbles_lost_i+2]
 
-                fumbles_lost_i = stat_list.index('Fumbles lost')
-                fumbles_lost_a = stat_list[fumbles_lost_i+1]
-                fumbles_lost_b = stat_list[fumbles_lost_i+2]
+            ints_thrown_i = stat_list.index('Interceptions thrown')
+            ints_thrown_a = stat_list[ints_thrown_i+1]
+            ints_thrown_b = stat_list[ints_thrown_i+2]
 
-                ints_thrown_i = stat_list.index('Interceptions thrown')
-                ints_thrown_a = stat_list[ints_thrown_i+1]
-                ints_thrown_b = stat_list[ints_thrown_i+2]
+            possession_i = stat_list.index('Possession')
+            possession_a = stat_list[possession_i+1]
+            possession_b = stat_list[possession_i+2]
+	    
+            result = pd.DataFrame.from_dict({'1st Downs': first_downs.values(), '3rd Downs': third_downs.values()}, orient='index')            
+            result.columns = teams.values()
 
-                possession_i = stat_list.index('Possession')
-                possession_a = stat_list[possession_i+1]
-                possession_b = stat_list[possession_i+2]
-    	    
-    	        result = pd.DataFrame.from_dict({'1st Downs': first_downs.values(), '3rd Downs': third_downs.values()}, orient='index')            
-                result.columns = teams.values()
-                results.append(result)
+        results.append(result)
                 # print 'Category,' + team1 + ',' + team2
                 # print '1st Downs, ' + first_downs_a + ',' + first_downs_b
                 # print '3rd down efficiency,="' + third_down_a + '",="' + third_down_b + '"'
@@ -135,4 +139,4 @@ def index():
     return render_template('index.html', title='Live Game Box Scores', results=results)
 
 if __name__ == '__main__':
-    application.run(host='0.0.0.0')
+    application.run()
