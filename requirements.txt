@@ -1,6 +1,7 @@
 Flask==0.9
 Cheetah==2.4.1
 Cython==0.21.1
+FAST==2.5
 Markdown==2.4.1
 PyYAML==3.10
 Pygments==1.4
@@ -32,6 +33,7 @@ pystache==0.5.3
 python-daemon==1.5.2
 python-dateutil==2.1
 pytz==2014.9
+lxml==3.4.1
 requests==0.13.5
 rsa==3.1.2
 simplejson==3.5.3
