@@ -26,6 +26,7 @@ pandas==0.15.1
 paramiko==1.7.5
 ply==3.4
 pycrypto==2.6.1
+pycurl==7.19.0
 pygpgme==0.1
 pyliblzma==0.5.3
 pystache==0.5.3
