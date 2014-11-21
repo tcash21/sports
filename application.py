@@ -1,4 +1,3 @@
-import pandas as pd
 import urllib2
 import re
 import random
@@ -7,6 +6,7 @@ from urlparse import urlparse
 from bs4 import BeautifulSoup as bs
 from flask import Flask
 from flask import render_template
+import pandas as pd
 app = Flask(__name__)
 
 @app.route("/analysis/")
