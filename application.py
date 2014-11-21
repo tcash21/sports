@@ -71,54 +71,64 @@ def index():
             fourth_down_i = stat_list.index('4th down efficiency')
             fourth_down_a = stat_list[fourth_down_i + 1]
             fourth_down_b = stat_list[fourth_down_i + 2]
-	    fourth_downs = {'4th DownsA': fourth_down_a, '4th DownsB': fourth_down_b}
+            fourth_downs = {'4th DownsA': fourth_down_a, '4th DownsB': fourth_down_b}
 
             total_yards_i = stat_list.index('Total Yards')
             total_yards_a = stat_list[total_yards_i+1]
             total_yards_b = stat_list[total_yards_i+2]
-	    total_yards = {'Total YardsA': total_yards_a, 'Total YardsB': total_yards_b}	    
+            total_yards = {'Total YardsA': total_yards_a, 'Total YardsB': total_yards_b}	    
   
             passing_i = stat_list.index('Passing')
             passing_a = stat_list[passing_i+1]
             passing_b = stat_list[passing_i+2]
+            passing = {'PassingA': passing_a, 'PassingB': passing_b}
 
             comp_att_i = stat_list.index('Comp-Att')
             comp_att_a = stat_list[comp_att_i+1]
             comp_att_b = stat_list[comp_att_i+2]
+            comp_att = {'CompletionAttA': comp_att_a, 'CompletionAttB': comp_att_b}
 
             rushing_i = stat_list.index('Rushing')
             rushing_a = stat_list[rushing_i+1]
             rushing_b = stat_list[rushing_i+2]
+            rushing = {'RushingA': rushing_a, 'RushingB': rushing_b}
 
             rushinga_i = stat_list.index('Rushing Attempts')
             rushinga_a = stat_list[rushinga_i+1]
             rushinga_b = stat_list[rushinga_i+2]
+            rushinga = {'RushingAA': rushinga_a, 'RushingAB': rushinga_b}
 
             yards_per_rush_i = stat_list.index('Yards per rush')
             yards_per_rush_a = stat_list[yards_per_rush_i+1]
             yards_per_rush_b = stat_list[yards_per_rush_i+2]
+            yards_per_rush = {'YardsPerRushA': yards_per_rush_a, 'YardsPerRushB': yards_per_rush_b}
 
             penalties_i = stat_list.index('Penalties')
             penalties_a = stat_list[penalties_i+1]
             penalties_b = stat_list[penalties_i+2]
+            penalties = {'PenaltiesA': penalties_a, 'PenaltiesB': penalties_b}
 
             turnovers_i = stat_list.index('Turnovers')
             turnovers_a = stat_list[turnovers_i+1]
             turnovers_b = stat_list[turnovers_i+2]
+            turnovers = {'TurnoversA': turnovers_a, 'TurnoversB': turnovers_b}
 
             fumbles_lost_i = stat_list.index('Fumbles lost')
             fumbles_lost_a = stat_list[fumbles_lost_i+1]
             fumbles_lost_b = stat_list[fumbles_lost_i+2]
+            fumbles_lost = {'FumblesLostA': fumbles_lost_a, 'FumblesLostB': fumbles_lost_b}
 
             ints_thrown_i = stat_list.index('Interceptions thrown')
             ints_thrown_a = stat_list[ints_thrown_i+1]
             ints_thrown_b = stat_list[ints_thrown_i+2]
+            ints_thrown = {'IntsThrownA': ints_thrown_a, 'IntsThrownB': ints_thrown_b}
 
             possession_i = stat_list.index('Possession')
             possession_a = stat_list[possession_i+1]
             possession_b = stat_list[possession_i+2]
+            possession = {'PossessionA': possession_a, 'PossessionB': possession_b}
 	    
-            result = pd.DataFrame.from_dict({'1st Downs': first_downs.values(), '3rd Downs': third_downs.values(), '4th Downs': fourth_downs.values(), 'Total Yards': total_yards.values()}, orient='index')            
+            result = pd.DataFrame.from_dict({'1st Downs': first_downs.values(), '3rd Downs': third_downs.values(), '4th Downs': fourth_downs.values(), 'Total Yards': total_yards.values(), 'Passing Yards': passing.values(), 'Completion Attempts': comp_att.values(), 'Rushing': rushing.values(), 'Rushing Attempts': rushinga.values(), 'Yards Per Rush': yards_per_rush.values(), 'Penalties': penalties.values(), 'Turnovers': turnovers.values(), 'Fumbles Lost': fumbles_lost.values(), 'Ints Thrown': ints_thrown.values(), 'Possession': possession.values() }, orient='index')            
             result.columns = teams.values()
 	
         results.append(result)
