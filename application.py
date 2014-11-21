@@ -9,9 +9,9 @@ from flask import render_template
 import pandas as pd
 app = Flask(__name__)
 
-@app.route("/analysis/")
-
-def analysis():
+@app.route("/index/")
+@app.route("/")
+def index():
     results = []
     url = urllib2.urlopen('http://scores.espn.go.com/ncf/scoreboard')
     #print url.geturl()
@@ -27,7 +27,7 @@ def analysis():
     ids = list(ids)
    
     if(len(ids) == 0):
-        return render_template('analysis.html', title='No Data Yet', error='No Live Games')
+        return render_template('index.html', title='No Data Yet', error='No Live Games')
     else:
         for id in ids:
             espn = 'http://scores.espn.go.com/' + league + '/boxscore?gameId=' + id 
@@ -132,7 +132,7 @@ def analysis():
                 # print 'Interceptions thrown, ' + ints_thrown_a + ',' + ints_thrown_b
                 # print 'Possession,="' + possession_a + '",="' + possession_b + '"'
                 # print ''
-    return render_template('analysis.html', title='Live Game Box Scores', results=results)
+    return render_template('index.html', title='Live Game Box Scores', results=results)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0')
