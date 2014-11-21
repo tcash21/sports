@@ -2,7 +2,6 @@ Flask==0.9
 Cheetah==2.4.1
 Cython==0.21.1
 Markdown==2.4.1
-PIL==1.1.6
 PyYAML==3.10
 Pygments==1.4
 argparse==1.2.1
