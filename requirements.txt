@@ -1,5 +1,3 @@
 Flask==0.9
-yum install gcc
-yum install gcc-c++
 pip install BeautifulSoup4
 pip install pandas
