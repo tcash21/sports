@@ -7,10 +7,10 @@ from bs4 import BeautifulSoup as bs
 from flask import Flask
 from flask import render_template
 import pandas as pd
-app = Flask(__name__)
+application = Flask(__name__)
 
-@app.route("/index/")
-@app.route("/")
+@application.route("/index/")
+@application.route("/")
 def index():
     results = []
     url = urllib2.urlopen('http://scores.espn.go.com/ncf/scoreboard')
@@ -135,4 +135,4 @@ def index():
     return render_template('index.html', title='Live Game Box Scores', results=results)
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0')
+    application.run(host='0.0.0.0')
