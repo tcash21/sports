@@ -71,11 +71,13 @@ def index():
             fourth_down_i = stat_list.index('4th down efficiency')
             fourth_down_a = stat_list[fourth_down_i + 1]
             fourth_down_b = stat_list[fourth_down_i + 2]
+	    fourth_downs = {'4th DownsA': fourth_down_a, '4th DownsB': fourth_down_b}
 
             total_yards_i = stat_list.index('Total Yards')
             total_yards_a = stat_list[total_yards_i+1]
             total_yards_b = stat_list[total_yards_i+2]
-
+	    total_yards = {'Total YardsA': total_yards_a, 'Total YardsB': total_yards_b}	    
+  
             passing_i = stat_list.index('Passing')
             passing_a = stat_list[passing_i+1]
             passing_b = stat_list[passing_i+2]
@@ -116,9 +118,9 @@ def index():
             possession_a = stat_list[possession_i+1]
             possession_b = stat_list[possession_i+2]
 	    
-            result = pd.DataFrame.from_dict({'1st Downs': first_downs.values(), '3rd Downs': third_downs.values()}, orient='index')            
+            result = pd.DataFrame.from_dict({'1st Downs': first_downs.values(), '3rd Downs': third_downs.values(), '4th Downs': fourth_downs.values(), 'Total Yards': total_yards.values()}, orient='index')            
             result.columns = teams.values()
-
+	
         results.append(result)
                 # print 'Category,' + team1 + ',' + team2
                 # print '1st Downs, ' + first_downs_a + ',' + first_downs_b
