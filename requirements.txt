@@ -5,7 +5,6 @@ Markdown==2.4.1
 PyYAML==3.10
 Pygments==1.4
 argparse==1.2.1
-aws-cfn-bootstrap==1.4
 aws-elasticbeanstalk-tools==1.13
 awscli==1.5.1
 backports.ssl-match-hostname==3.4.0.2
