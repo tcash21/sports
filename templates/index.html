@@ -1,9 +1,10 @@
+<html>
+
 <script> 
 
 noise = Math.floor((Math.random() * 1000) + 500);
 var currentdate = new Date();
 hour = currentdate.getHours();
-
 
 if (hour >= 12){
 setInterval(                               //Periodically 
@@ -12,6 +13,7 @@ setInterval(                               //Periodically
     window.location = "/"
   },
   300000 + noise);                                    // And do it every 5 minutes
+//	console.log(300000 + noise);
 	document.write('Page will refresh every 5 minutes');
 	document.write('<br>');
 
@@ -29,8 +31,26 @@ var datetime = "Last Sync: " + currentdate.getDate() + "/"
 document.write(datetime);
 </script>
 
-<h1>Results</h1>
+<script>
+var i = 1;
+</script>
+
+<h1>Box Scores</h1>
 {{ error }}
+
+<table>
+<tr>
 {% for df in results %}
+<td>
 {{df.to_html() | safe}}
+<script>
+ 	if ((i % 4) == 0){
+                document.write("</tr><tr>");
+        }
+        i = i + 1;
+</script>
+</td>
 {% endfor %}
+
+</table>
+</html>
