@@ -4,6 +4,7 @@ noise = Math.floor((Math.random() * 1000) + 500);
 var currentdate = new Date();
 hour = currentdate.getHours();
 
+
 if (hour >= 12){
 setInterval(                               //Periodically 
   function()
@@ -13,6 +14,7 @@ setInterval(                               //Periodically
   300000 + noise);                                    // And do it every 5 minutes
 } else {
 	document.write('Page only refreshes between 12pm and 12am EST');
+	document.write("<br>");
 }
 
 var datetime = "Last Sync: " + currentdate.getDate() + "/"
