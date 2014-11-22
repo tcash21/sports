@@ -18,14 +18,19 @@ def index():
     
 
     results = []
+    ids = []
     url = urllib2.urlopen('http://scores.espn.go.com/ncf/scoreboard')
     #print url.geturl()
     soup = bs(url.read(), ['fast', 'lxml'])
     #div = soup.find('div', {'class': 'span-2 0-gameCount'})
-    links = soup.findAll('a', href=re.compile('/ncf/boxscore.*'))
-    urls = [link.get('href') for link in links]
-    matches=[re.search('gameId=(\d+)', u) for u in urls]
-    ids = [m.group(1) for m in matches]
+    game_status = soup.findAll('p', id=re.compile('\d+-statusText'))
+    rx = re.compile('(1st|2nd|3rd|4th|OT|Half)')
+
+    ## only grab the live game IDs 
+    for game in game_status:
+        if (re.search(rx, game.text)):
+            ids.append(re.search("(\d+)", game["id"]).group())
+
     league = 'ncf'
 
     ids = set(ids)
@@ -39,6 +44,7 @@ def index():
             url = urllib2.urlopen(espn)
             soup = bs(url.read(), ['fast', 'lxml'])
             divs = soup.findAll('div', {'class':'mod-header'})
+            game_times = soup.findAll('div', {'class':'game-status'})
             for div in divs:
                 try:
                     if(div.h4.contents[0] == 'Team Stat Comparison'):
@@ -133,7 +139,7 @@ def index():
                         result.index = ['First Downs', 'Third Downs', 'Fourth Downs', 'Total Yards', 'Passing', 'Completion Attempts', 'Rushing', 'Rushing Attempts', 'Yards Per Rush', 'Penalties', 'Turnovers', 'Fumbles Lost', 'Ints Thrown', 'Possession']    
                         result.columns = teams
                         results.append(result)
-                        
+
                 except:
                     print 'unexpected error'
                     continue
