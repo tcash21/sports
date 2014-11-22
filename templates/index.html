@@ -42,6 +42,7 @@ var i = 1;
 <tr>
 {% for df in results %}
 <td>
+{{ times[loop.index0] }} 
 {{df.to_html() | safe}}
 <script>
  	if ((i % 4) == 0){
