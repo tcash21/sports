@@ -2,11 +2,15 @@ import urllib2
 import re
 import random
 import datetime
-from urlparse import urlparse
-from bs4 import BeautifulSoup as bs
+import os
+import sqlite3
+import pandas as pd
+from flask import g
 from flask import Flask
 from flask import render_template
-import pandas as pd
+from urlparse import urlparse
+from bs4 import BeautifulSoup as bs
+
 application = Flask(__name__)
 
 application.debug=True
@@ -16,35 +20,37 @@ application.debug=True
 
 def index():
     results = []
-    ids = []
     times = []
+    halftime_ids = []
     url = urllib2.urlopen('http://scores.espn.go.com/ncf/scoreboard')
-    #print url.geturl()
     soup = bs(url.read(), ['fast', 'lxml'])
-    #div = soup.find('div', {'class': 'span-2 0-gameCount'})
     game_status = soup.findAll('p', id=re.compile('\d+-statusText'))
-    rx = re.compile('(1st|2nd|3rd|4th|OT|Half)')
+    current_week = soup.find('div', {'class':'sc_logo'}).nextSibling.text
+    #rx = re.compile('(1st|2nd')
+    ht = re.compile('Half')
+    
+    # ## only grab the live game IDs up until halftime
+    # for game in game_status:
+    #     if (re.search(rx, game.text)):
+    #         ids.append(re.search("(\d+)", game["id"]).group())
+    #         times.append(game.text)
 
-    ## only grab the live game IDs 
+    ## freeze updates at the half
     for game in game_status:
-        if (re.search(rx, game.text)):
-            ids.append(re.search("(\d+)", game["id"]).group())
-            times.append(game.text)
+        if (re.search(ht, game.text) and re.search("(\d+)", game["id"]).group() not in halftime_ids):
+            halftime_ids.append(re.search("(\d+)", game["id"]).group())
 
     league = 'ncf'
-    #ids = set(ids)
-    #ids = list(ids)
 
-    if(len(ids) == 0):
-        return render_template('index.html', title='No Data Yet', error='No Live Games')
+    if(len(halftime_games) == 0):
+        return render_template('index.html', title='No Data Yet', error='No Halftime Box Scores')
     else:
-        for i in range(0, len(ids)):
-            espn = 'http://scores.espn.go.com/' + league + '/boxscore?gameId=' + ids[i]
+        for i in range(0, len(halftime_ids)):
+            espn = 'http://scores.espn.go.com/' + league + '/boxscore?gameId=' + halftime_ids[i]
             url = urllib2.urlopen(espn)
             soup = bs(url.read(), ['fast', 'lxml'])
             divs = soup.findAll('div', {'class':'mod-header'})
             for div in divs:
-                #try:
                 if(div.h4.contents[0] == 'Team Stat Comparison'):
                     the_div = div
                     box_score = the_div.next_sibling
@@ -138,9 +144,9 @@ def index():
                     results.append(result)
 
                 else:
-                    print 'unexpected error'
+                    print 'Trying next div'
 
-    return render_template('index.html', title='Live Game Box Scores', results=results, times=times)
+    return render_template('index.html', title='Halftime Box Scores', results=results, times=times)
 
 if __name__ == '__main__':
     application.run()
