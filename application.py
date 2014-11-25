@@ -11,7 +11,7 @@ application = Flask(__name__)
 application.debug = True
 
 application.config.update(dict(
-    DATABASE=os.path.join(application.root_path, 'sports.db'),
+    DATABASE='/home/ec2-user/sports/sports.db',
     DEBUG=True
     #SECRET_KEY='development key',
     #USERNAME='admin',
