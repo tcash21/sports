@@ -12,6 +12,7 @@ application.debug = True
 
 application.config.update(dict(
     DATABASE='/home/ec2-user/sports/sports.db',
+#    DATABASE='/Users/tanyacashorali/Documents/Scripts/sports/sports.db',
     DEBUG=True
     #SECRET_KEY='development key',
     #USERNAME='admin',
