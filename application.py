@@ -7,21 +7,21 @@ from flask import Flask
 
 #DATABASE = '~/Downloads/sports'
 
-app = Flask(__name__)
-app.debug = True
+application = Flask(__name__)
+application.debug = True
 
-app.config.update(dict(
-    DATABASE=os.path.join(app.root_path, 'sports.db'),
+application.config.update(dict(
+    DATABASE=os.path.join(application.root_path, 'sports.db'),
     DEBUG=True
     #SECRET_KEY='development key',
     #USERNAME='admin',
     #PASSWORD='default'
 ))
-app.config.from_envvar('FLASKR_SETTINGS', silent=True)
+application.config.from_envvar('FLASKR_SETTINGS', silent=True)
 
 def connect_db():
     """Connects to the specific database."""
-    rv = sqlite3.connect(app.config['DATABASE'])
+    rv = sqlite3.connect(application.config['DATABASE'])
     rv.row_factory = sqlite3.Row
     return rv
 
@@ -34,13 +34,13 @@ def get_db():
     return g.sqlite_db
 
 
-@app.teardown_appcontext
+@application.teardown_appcontext
 def close_connection(exception):
     db = getattr(g, '_database', None)
     if db is not None:
         db.close()
 
-@app.route('/')
+@application.route('/')
 def show_entries():
     db = get_db()
     cur = db.execute('select game_id, game_date FROM games')
@@ -64,4 +64,4 @@ def show_entries():
     return render_template('index.html', results=results, times=times)
 
 if __name__ == '__main__':
-    app.run()
+    application.run()
