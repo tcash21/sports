@@ -1,48 +1,12 @@
 <html>
-
-<script> 
-
-noise = Math.floor((Math.random() * 1000) + 500);
-var currentdate = new Date();
-hour = currentdate.getHours();
-
-if (hour >= 12){
-setInterval(                               //Periodically 
-  function()
-  {
-    window.location = "/"
-  },
-  300000 + noise);                                    // And do it every 5 minutes
-//	console.log(300000 + noise);
-	document.write('Page will refresh every 5 minutes');
-	document.write('<br>');
-
-} else {
-	document.write('Page only refreshes between 12pm and 1am EST');
-	document.write("<br>");
-}
-
-var datetime = "Last Sync: " + currentdate.getDate() + "/"
-                + (currentdate.getMonth()+1)  + "/" 
-                + currentdate.getFullYear() + " @ "  
-                + currentdate.getHours() + ":"  
-                + currentdate.getMinutes() + ":" 
-                + currentdate.getSeconds();
-document.write(datetime);
-</script>
-
-<script>
-var i = 1;
-</script>
-
-<h1>Box Scores</h1>
+<h1>Halftime Box Scores</h1>
 {{ error }}
 
 <table>
 <tr>
 {% for df in results %}
 <td>
-{{ times[loop.index0] }} 
+{{ times[loop.index0] }}
 {{df.to_html() | safe}}
 <script>
  	if ((i % 4) == 0){
@@ -54,4 +18,3 @@ var i = 1;
 {% endfor %}
 
 </table>
-</html>

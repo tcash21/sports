@@ -61,7 +61,7 @@ def show_entries():
         result.index = ['First Downs', 'Third Downs', 'Fourth Downs', 'Total Yards', 'Passing', 'Completion Attempts', 'Rushing', 'Rushing Attempts', 'Yards Per Pass', 'Yards Per Rush', 'Penalties', 'Turnovers', 'Fumbles Lost', 'Ints Thrown', 'Possession']    
         results.append(result)
         times.append(game_ids[i][1])
-    return render_template('games.html', results=results, times=times)
+    return render_template('index.html', results=results, times=times)
 
 if __name__ == '__main__':
     app.run()
