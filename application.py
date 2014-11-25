@@ -43,26 +43,27 @@ def close_connection(exception):
 
 @application.route('/')
 def show_entries():
-    db = get_db()
-    cur = db.execute('select game_id, game_date FROM games')
-    cur2 = db.execute('select * FROM stats')
-    game_ids = cur.fetchall()
-    stats = cur2.fetchall()
-    db.close()
-    result = pd.DataFrame(stats)
-    result.index = result[0]
-    results = []
-    times = []
-    for i in range (0, len(game_ids)):
-        result = result.ix[game_ids[i][0]]
-        teams = result[1]
-        result = result.transpose()
-        result.columns = teams
-        result = result.ix[2:]
-        result.index = ['First Downs', 'Third Downs', 'Fourth Downs', 'Total Yards', 'Passing', 'Completion Attempts', 'Rushing', 'Rushing Attempts', 'Yards Per Pass', 'Yards Per Rush', 'Penalties', 'Turnovers', 'Fumbles Lost', 'Ints Thrown', 'Possession']    
-        results.append(result)
-        times.append(game_ids[i][1])
-    return render_template('index.html', results=results, times=times)
+    with application.app_context():
+        db = get_db()
+        cur = db.execute('select game_id, game_date FROM games')
+        cur2 = db.execute('select * FROM stats')
+        game_ids = cur.fetchall()
+        stats = cur2.fetchall()
+        db.close()
+        result = pd.DataFrame(stats)
+        result.index = result[0]
+        results = []
+        times = []
+        for i in range (0, len(game_ids)):
+            result = result.ix[game_ids[i][0]]
+            teams = result[1]
+            result = result.transpose()
+            result.columns = teams
+            result = result.ix[2:]
+            result.index = ['First Downs', 'Third Downs', 'Fourth Downs', 'Total Yards', 'Passing', 'Completion Attempts', 'Rushing', 'Rushing Attempts', 'Yards Per Pass', 'Yards Per Rush', 'Penalties', 'Turnovers', 'Fumbles Lost', 'Ints Thrown', 'Possession']    
+            results.append(result)
+            times.append(game_ids[i][1])
+        return render_template('index.html', results=results, times=times)
 
 if __name__ == '__main__':
     application.run()
