@@ -1,2 +1,4 @@
 # The newline at the end of this file is extremely important.  Cron won't run without it.
 0,5,10,15,20,25,30,35,40,45,50,55 * * * 1-6 python /home/ec2-user/sports/scrape.py > /home/ec2-user/log_$(date -u +\%Y\%m\%dt\%H\%M\%S).txt
+
+
