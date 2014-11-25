@@ -8,15 +8,15 @@ import pandas as pd
 from urlparse import urlparse
 from bs4 import BeautifulSoup as bs
 
-db = sqlite3.connect('/Users/tanyacashorali/Documents/Scripts/sports/sports.db')
+db = sqlite3.connect('/home/ec2-user/sports/sports.db')
 
 def index():
     print "entered index"
     times = []
     halftime_ids = []
-    #url = urllib2.urlopen('http://scores.espn.go.com/ncf/scoreboard')
-    #soup = bs(url.read(), ['fast', 'lxml'])
-    soup = bs(open('testPage1.html'))
+    url = urllib2.urlopen('http://scores.espn.go.com/ncf/scoreboard')
+    soup = bs(url.read(), ['fast', 'lxml'])
+    #soup = bs(open('testPage1.html'))
     game_status = soup.findAll('p', id=re.compile('\d+-statusText'))
     current_week = soup.find('div', {'class':'sc_logo'}).nextSibling.text
     #rx = re.compile('(1st|2nd')
@@ -39,10 +39,10 @@ def index():
         print "No Halftime Box Scores yet."
     else:
         for i in range(0, len(halftime_ids)):
-            #espn = 'http://scores.espn.go.com/' + league + '/boxscore?gameId=' + halftime_ids[i]
-            #url = urllib2.urlopen(espn)
-            #soup = bs(url.read(), ['fast', 'lxml'])
-            soup = bs(open('testPage2.html'))
+            espn = 'http://scores.espn.go.com/' + league + '/boxscore?gameId=' + halftime_ids[i]
+            url = urllib2.urlopen(espn)
+            soup = bs(url.read(), ['fast', 'lxml'])
+            #soup = bs(open('testPage2.html'))
             game_date = soup.findAll('div', {'class':'game-time-location'})[0].p.text
             divs = soup.findAll('div', {'class':'mod-header'})
             for div in divs:
