@@ -1,20 +1,17 @@
 import os
 import sqlite3
 import pandas as pd
-from flask import render_template
+from flask import render_template, request, session
 from flask import g
 from flask import Flask
-
-#DATABASE = '~/Downloads/sports'
 
 application = Flask(__name__)
 application.debug = True
 
 application.config.update(dict(
     DATABASE='/home/ec2-user/sports/sports.db',
-#    DATABASE='/Users/tanyacashorali/Documents/Scripts/sports/sports.db',
-    DEBUG=True
-    #SECRET_KEY='development key',
+    DEBUG=True,
+    SECRET_KEY = open("/dev/random","rb").read(32)
     #USERNAME='admin',
     #PASSWORD='default'
 ))
@@ -40,6 +37,11 @@ def close_connection(exception):
     db = getattr(g, '_database', None)
     if db is not None:
         db.close()
+
+@application.route('/date_select', methods=['POST'])
+def date_select():
+    session['game_date'] = request.form['game_date']
+    return(render_template('index.html', error=session['game_date']))
 
 @application.route('/')
 def show_entries():
