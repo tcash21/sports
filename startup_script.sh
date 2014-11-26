@@ -1,3 +1,4 @@
+## amzn-ami-hvm-2014.09.1.x86_64-ebs (ami-b66ed3de)
 sudo yum -y update
 sudo yum -y install git
 sudo yum -y install gcc
