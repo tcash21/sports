@@ -1,4 +1,4 @@
-#create database 'sports.db';
+--create database 'sports.db';
 attach database 'sports.db' as 'sports';
 
 create table sports.games(

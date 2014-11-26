@@ -50,20 +50,24 @@ def show_entries():
         game_ids = cur.fetchall()
         stats = cur2.fetchall()
         db.close()
-        result = pd.DataFrame(stats)
-        result.index = result[0]
-        results = []
-        times = []
-        for i in range (0, len(game_ids)):
-            result = result.ix[game_ids[i][0]]
-            teams = result[1]
-            result = result.transpose()
-            result.columns = teams
-            result = result.ix[2:]
-            result.index = ['First Downs', 'Third Downs', 'Fourth Downs', 'Total Yards', 'Passing', 'Completion Attempts', 'Rushing', 'Rushing Attempts', 'Yards Per Pass', 'Yards Per Rush', 'Penalties', 'Turnovers', 'Fumbles Lost', 'Ints Thrown', 'Possession']    
-            results.append(result)
-            times.append(game_ids[i][1])
+        if(len(stats) > 0):
+   	    result = pd.DataFrame(stats)
+            result.index = result[0]
+            results = []
+            times = []
+	    for i in range (0, len(game_ids)):
+                result = result.ix[game_ids[i][0]]
+                teams = result[1]
+                result = result.transpose()
+                result.columns = teams
+                result = result.ix[2:]
+                result.index = ['First Downs', 'Third Downs', 'Fourth Downs', 'Total Yards', 'Passing', 'Completion Attempts', 'Rushing', 'Rushing Attempts', 'Yards Per Pass', 'Yards Per Rush', 'Penalties', 'Turnovers', \
+'Fumbles Lost', 'Ints Thrown', 'Possession']    
+                results.append(result)
+                times.append(game_ids[i][1])
+        else:
+	    return(render_template('index.html', error='No Box Scores'))
         return render_template('index.html', results=results, times=times)
 
 if __name__ == '__main__':
-    application.run()
+    application.run(host='0.0.0.0')

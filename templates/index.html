@@ -1,6 +1,8 @@
 <html>
 <h1>Halftime Box Scores</h1>
-{{ error }}
+{% if error %}
+   <h1> No Box Scores</h1>
+{% else %}
 
 <table>
 <tr>
@@ -18,3 +20,4 @@
 {% endfor %}
 
 </table>
+{% endif %}
