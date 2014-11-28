@@ -58,14 +58,14 @@ def show_entries():
             results = []
             times = []
 	    for i in range (0, len(game_ids)):
-                result = result.ix[game_ids[i][0]]
-                teams = result[1]
-                result = result.transpose()
-                result.columns = teams
-                result = result.ix[2:]
-                result.index = ['First Downs', 'Third Downs', 'Fourth Downs', 'Total Yards', 'Passing', 'Completion Attempts', 'Rushing', 'Rushing Attempts', 'Yards Per Pass', 'Yards Per Rush', 'Penalties', 'Turnovers', \
+                result2 = result.ix[game_ids[i][0]]
+                teams = result2[1]
+                result2 = result2.transpose()
+                result2.columns = teams
+                result2 = result2.ix[2:]
+                result2.index = ['First Downs', 'Third Downs', 'Fourth Downs', 'Total Yards', 'Passing', 'Completion Attempts', 'Rushing', 'Rushing Attempts', 'Yards Per Pass', 'Yards Per Rush', 'Penalties', 'Turnovers', \
 'Fumbles Lost', 'Ints Thrown', 'Possession']    
-                results.append(result)
+                results.append(result2)
                 times.append(game_ids[i][1])
         else:
 	    return(render_template('index.html', error='No Box Scores'))
