@@ -47,7 +47,8 @@ def date_select():
         cur = db.execute("select g.game_id, game_date FROM games g, stats s where g.game_id = s.game_id and game_date =?", (session['game_date'],))
         cur2 = db.execute("select * FROM stats s, games g where s.game_id = g.game_id and game_date = ?", (session['game_date'],))
         game_ids = cur.fetchall()
-        stats = cur2.fetchall()
+        game_ids = list(set(game_ids))
+	stats = cur2.fetchall()
         db.close()
         if(len(stats) > 0):
             result = pd.DataFrame(stats)
@@ -75,6 +76,7 @@ def show_entries():
         cur = db.execute("select g.game_id, game_date FROM games g, stats s where g.game_id = s.game_id and game_date=?", (time.strftime("%m/%d/%Y"),))
         cur2 = db.execute("select * FROM stats s, games g where s.game_id = g.game_id and game_date = ?", (time.strftime("%m/%d/%Y"),))
         game_ids = cur.fetchall()
+	game_ids = list(set(game_ids))
         stats = cur2.fetchall()
         db.close()
         if(len(stats) > 0):

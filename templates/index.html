@@ -1,10 +1,10 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>jQuery UI Datepicker - Default functionality</title>
-  <link rel="stylesheet" href="//code.jquery.com/ui/1.11.2/themes/smoothness/jquery-ui.css">
-  <script src="//code.jquery.com/jquery-1.10.2.js"></script>
-  <script src="//code.jquery.com/ui/1.11.2/jquery-ui.js"></script>
+  <title>Halftime Box Scores</title>
+  <link rel="stylesheet" href="http://taitems.github.io/Aristo-jQuery-UI-Theme/css/Aristo/Aristo.css">
+  <script src="http://code.jquery.com/jquery-1.10.2.js"></script>
+  <script src="http://code.jquery.com/ui/1.11.2/jquery-ui.js"></script>
   <script>
   $(function() {
     $( "#game_date" ).datepicker();
@@ -13,8 +13,10 @@
 </head>
 <body>
 <form method="post" action="{{ url_for('date_select') }}">
-<p>Date: <input type="text" id="game_date" name="game_date"></p>
-<p><button type="submit">Go</button></p>
+<p>Date: <input type="text" id="game_date" name="game_date">
+<button type="submit">Go</button>
+<button>NCAA - Coming Soon</button>
+ 
 </form>
 
 <script>
@@ -26,6 +28,15 @@ var i = 1;
    <h1>{{ error }}</h1>
 {% else %}
 
+<style type="text/css">
+.tftable {font-size:12px;color:#333333;width:100%;border-width: 1px;border-color: #a9a9a9;border-collapse: collapse;}
+.tftable th {font-size:12px;background-color:#b8b8b8;border-width: 1px;padding: 8px;border-style: solid;border-color: #a9a9a9;text-align:left;}
+.tftable tr {background-color:#ffffff;}
+.tftable td {font-size:12px;border-width: 1px;padding: 8px;border-style: solid;border-color: #a9a9a9;}
+.tftable tr:hover {background-color:#ffff99;}
+</style>
+
+<div class="tftable">
 <table>
 	<tr>
 	{% for df in results %}
@@ -41,4 +52,5 @@ var i = 1;
 		</td>
 	{% endfor %}
 </table>
+</div>
 {% endif %}
