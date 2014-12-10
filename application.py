@@ -1,4 +1,5 @@
 import os
+import time
 import sqlite3
 import pandas as pd
 from flask import render_template, request, session
@@ -41,14 +42,38 @@ def close_connection(exception):
 @application.route('/date_select', methods=['POST'])
 def date_select():
     session['game_date'] = request.form['game_date']
-    return(render_template('index.html', error=session['game_date']))
+    with application.app_context():
+        db = get_db()
+        cur = db.execute("select g.game_id, game_date FROM games g, stats s where g.game_id = s.game_id and game_date =?", (session['game_date'],))
+        cur2 = db.execute("select * FROM stats s, games g where s.game_id = g.game_id and game_date = ?", (session['game_date'],))
+        game_ids = cur.fetchall()
+        stats = cur2.fetchall()
+        db.close()
+        if(len(stats) > 0):
+            result = pd.DataFrame(stats)
+            result.index = result[0]
+            results = []
+            times = []
+            for i in range (0, len(game_ids)):
+                result2 = result.ix[game_ids[i][0]]
+                teams = result2[1]
+                result2 = result2.transpose()
+                result2.columns = teams
+                result2 = result2.ix[2:16]
+                result2.index = ['First Downs', 'Third Downs', 'Fourth Downs', 'Total Yards', 'Passing', 'Completion Attempts', 'Rushing', 'Rushing Attempts', 'Yards Per Pass', 'Yards Per Rush', 'Penalties', 'Turnovers', \
+'Fumbles Lost', 'Ints Thrown', 'Possession']
+                results.append(result2)
+                times.append(game_ids[i][1])
+        else:
+            return(render_template('index.html', error='No Box Scores'))
+        return render_template('index.html', results=results, times=times)
 
 @application.route('/')
 def show_entries():
     with application.app_context():
         db = get_db()
-        cur = db.execute('select game_id, game_date FROM games')
-        cur2 = db.execute('select * FROM stats')
+        cur = db.execute("select g.game_id, game_date FROM games g, stats s where g.game_id = s.game_id and game_date=?", (time.strftime("%m/%d/%Y"),))
+        cur2 = db.execute("select * FROM stats s, games g where s.game_id = g.game_id and game_date = ?", (time.strftime("%m/%d/%Y"),))
         game_ids = cur.fetchall()
         stats = cur2.fetchall()
         db.close()
@@ -63,8 +88,7 @@ def show_entries():
                 result2 = result2.transpose()
                 result2.columns = teams
                 result2 = result2.ix[2:]
-                result2.index = ['First Downs', 'Third Downs', 'Fourth Downs', 'Total Yards', 'Passing', 'Completion Attempts', 'Rushing', 'Rushing Attempts', 'Yards Per Pass', 'Yards Per Rush', 'Penalties', 'Turnovers', \
-'Fumbles Lost', 'Ints Thrown', 'Possession']    
+                result2.index = ['First Downs', 'Third Downs', 'Fourth Downs', 'Total Yards', 'Passing', 'Completion Attempts', 'Rushing', 'Rushing Attempts', 'Yards Per Pass', 'Yards Per Rush', 'Penalties', 'Turnovers', 'Fumbles Lost', 'Ints Thrown', 'Possession']    
                 results.append(result2)
                 times.append(game_ids[i][1])
         else:

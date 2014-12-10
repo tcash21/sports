@@ -46,7 +46,7 @@ def index():
             game_date = soup.findAll('div', {'class':'game-time-location'})[0].p.text
 	    the_date =  re.search(',\s(.*)', game_date).group(1)
             t=time.strptime(the_date, "%B %d, %Y")
-	    gdate= str(t[0]) + '-' +  str(t[1]) + '-' + str(t[2])
+	    gdate=time.strftime('%m/%d/%Y', t)
 	    divs = soup.findAll('div', {'class':'mod-header'})
             for div in divs:
                 if(div.h4.contents[0] == 'Team Stat Comparison'):
