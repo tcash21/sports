@@ -44,7 +44,10 @@ def index():
             soup = bs(url.read(), ['fast', 'lxml'])
             #soup = bs(open('testPage2.html'))
             game_date = soup.findAll('div', {'class':'game-time-location'})[0].p.text
-            divs = soup.findAll('div', {'class':'mod-header'})
+	    the_date =  re.search(',\s(.*)', game_date).group(1)
+            t=time.strptime(the_date, "%B %d, %Y")
+	    gdate= str(t[0]) + '-' +  str(t[1]) + '-' + str(t[2])
+	    divs = soup.findAll('div', {'class':'mod-header'})
             for div in divs:
                 if(div.h4.contents[0] == 'Team Stat Comparison'):
                     the_div = div
@@ -58,7 +61,7 @@ def index():
 
                     try:
                         with db:
-                            db.execute('''INSERT INTO games(game_id, team1, team2, game_date) VALUES(?,?,?,?)''', (halftime_ids[i], team1, team2, game_date))
+                            db.execute('''INSERT INTO games(game_id, team1, team2, game_date) VALUES(?,?,?,?)''', (halftime_ids[i], team1, team2, gdate))
                             db.commit()
                             for stat in stats:
                                 try:
