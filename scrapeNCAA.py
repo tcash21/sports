@@ -39,9 +39,7 @@ def index():
     for game in game_status:
         if (re.search(ht, game.text) and re.search("(\d+)", game["id"]).group() not in halftime_ids):
             halftime_ids.append(re.search("(\d+)", game["id"]).group())
-
     league = 'ncb'
-
     if(len(halftime_ids) == 0):
         print "No Halftime Box Scores yet."
     else:
@@ -89,7 +87,6 @@ def index():
             cleaned2.pop()
             cleaned2.pop()
             cleaned2.pop()
-
             try:
                 with db:
                     db.execute('''INSERT INTO NCAAgames(game_id, team1, team2, gdate) VALUES(?,?,?,?)''', (halftime_ids[i], team1, team2, game_date))
@@ -99,12 +96,13 @@ def index():
             try:
                 db.execute('''INSERT INTO NCAAstats(game_id, team, fgma, tpma, ftma, oreb, dreb, reb, ast, stl, blk, turnovers, pts ) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)''', (halftime_ids[i], team1, cleaned1[2], cleaned1[3], cleaned1[4], int(cleaned1[5]), int(cleaned1[6]), int(cleaned1[7]), int(cleaned1[8]), int(cleaned1[9]), int(cleaned1[10]), int(cleaned1[11]), int(cleaned1[12]), int(cleaned1[13]))
                 db.commit()
+            except sqlite3.IntegrityError:
+                print('Error inserting data')
             try:
                 db.execute('''INSERT INTO NCAAstats(game_id, team, fgma, tpma, ftma, oreb, dreb, reb, ast, stl, blk, turnovers, pts ) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)''', (halftime_ids[i], team2, cleaned2[2], cleaned2[3], cleaned2[4], int(cleaned2[5]), int(cleaned2[6]), int(cleaned2[7]), int(cleaned2[8]), int(cleaned2[9]), int(cleaned2[10]), int(cleaned2[11]), int(cleaned2[12]), int(cleaned2[13]))
                 db.commit()
             except sqlite3.IntegrityError:
                 print('Error inserting data')
-
 index()
 db.close()
 
