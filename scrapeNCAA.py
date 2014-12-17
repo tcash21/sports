@@ -20,7 +20,7 @@ def index():
     url = urllib2.urlopen('http://scores.espn.go.com/ncb/scoreboard?date=20141216&breakdown=top25')
     soup = bs(url.read(), ['fast', 'lxml'])
     #soup = bs(open('testPage1.html'))
-    game_status = soup.findAll('p', id=re.compile('\d+-statusText'))
+    game_status = soup.findAll('p', id=re.compile('\d+-statusLine'))
     links = soup.findAll('a', href=re.compile('/ncb/boxscore.*'))
     urls = [link.get('href') for link in links]
     matches=[re.search('gameId=(\d+)', u) for u in urls]
