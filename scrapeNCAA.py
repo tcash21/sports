@@ -69,20 +69,27 @@ def index():
             tds = team1_data.findAll('td')
             values = [v.text for v in tds]
             remove = [v == '' for v in values]
-            remove_indices = [i for i, x in enumerate(remove) if x]
-            cleaned1 = [i for j, i in enumerate(values) if j not in remove_indices]
+            remove_indices = [j for i, x in enumerate(remove) if x]
+            cleaned1 = [j for k, j in enumerate(values) if k not in remove_indices]
             team1 = linescore.findAll('a')[0].text
             team2 = linescore.findAll('a')[1].text
             team1_data = the_thead.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling
             tds = team1_data.findAll('td')
             values = [v.text for v in tds]
             remove = [v == '' for v in values]
-            remove_indices = [i for i, x in enumerate(remove) if x]
-            cleaned2 = [i for j, i in enumerate(values) if j not in remove_indices]
+            remove_indices = [j for j, x in enumerate(remove) if x]
+            cleaned2 = [j for k, j in enumerate(values) if k not in remove_indices]
             cleaned1.insert(0, team1)
             cleaned2.insert(0, team2)
             cleaned1.insert(0, halftime_ids[i])
             cleaned2.insert(0, halftime_ids[i])
+            cleaned1.pop()
+            cleaned1.pop()
+            cleaned1.pop()
+            cleaned2.pop()
+            cleaned2.pop()
+            cleaned2.pop()
+
 
             try:
                 with db:
