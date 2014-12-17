@@ -67,7 +67,7 @@ def index():
             tds = team1_data.findAll('td')
             values = [v.text for v in tds]
             remove = [v == '' for v in values]
-            remove_indices = [j for i, x in enumerate(remove) if x]
+            remove_indices = [a for a, b in enumerate(remove) if b]
             cleaned1 = [j for k, j in enumerate(values) if k not in remove_indices]
             team1 = linescore.findAll('a')[0].text
             team2 = linescore.findAll('a')[1].text
