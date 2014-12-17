@@ -90,7 +90,6 @@ def index():
             cleaned2.pop()
             cleaned2.pop()
 
-
             try:
                 with db:
                     db.execute('''INSERT INTO NCAAgames(game_id, team1, team2, gdate) VALUES(?,?,?,?)''', (halftime_ids[i], team1, team2, game_date))
