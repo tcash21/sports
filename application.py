@@ -50,7 +50,6 @@ def date_select():
         game_ids = cur.fetchall()
         game_ids = list(set(game_ids))
         stats = cur2.fetchall()
-        db.close()
         if(len(stats) > 0):
             result = pd.DataFrame(stats)
             result.index = result[0]
@@ -66,8 +65,6 @@ def date_select():
 'Fumbles Lost', 'Ints Thrown', 'Possession']
                 resultsNCF.append(result2)
                 timesNCF.append(game_ids[i][1])
-        
-        db = get_db()
         curNCAA = db.execute("select g.game_id, game_date FROM NCAAgames g, NCAAstats s where g.game_id = s.game_id and game_date =?", (session['game_date'],))
         cur2NCAA = db.execute("select * FROM NCAAstats s, games g where s.game_id = g.game_id and game_date = ?", (session['game_date'],))
         game_ids = curNCAA.fetchall()
