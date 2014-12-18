@@ -27,7 +27,7 @@ def index():
     ids = [m.group(1) for m in matches]
     #current_week = soup.find('div', {'class':'sc_logo'}).nextSibling.text
     #rx = re.compile('(1st|2nd')
-    ht = re.compile('Final')
+    ht = re.compile('Half')
 
     # ## only grab the live game IDs up until halftime
     # for game in game_status:
