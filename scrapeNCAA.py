@@ -69,6 +69,7 @@ def index():
             remove = [v == '' for v in values]
             remove_indices = [a for a, b in enumerate(remove) if b]
             cleaned1 = [j for k, j in enumerate(values) if k not in remove_indices]
+            linescore = soup.find('table', {'class':'linescore'})
             team1 = linescore.findAll('a')[0].text
             team2 = linescore.findAll('a')[1].text
             team1_data = the_thead.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling
@@ -89,7 +90,7 @@ def index():
             cleaned2.pop()
             try:
                 with db:
-                    db.execute('''INSERT INTO NCAAgames(game_id, team1, team2, gdate) VALUES(?,?,?,?)''', (halftime_ids[i], team1, team2, game_date))
+                    db.execute('''INSERT INTO NCAAgames(game_id, team1, team2, game_date) VALUES(?,?,?,?)''', (halftime_ids[i], team1, team2, gdate))
                     db.commit()
             except sqlite3.IntegrityError:
                 print('Error inserting data')
