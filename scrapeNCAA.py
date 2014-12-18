@@ -17,7 +17,7 @@ def index():
     print "entered index"
     times = []
     halftime_ids = []
-    url = urllib2.urlopen('http://scores.espn.go.com/ncb/scoreboard?date=20141216&breakdown=top25')
+    url = urllib2.urlopen('http://scores.espn.go.com/ncb/scoreboard')
     soup = bs(url.read(), ['fast', 'lxml'])
     #soup = bs(open('testPage1.html'))
     game_status = soup.findAll('p', id=re.compile('\d+-statusLine'))
