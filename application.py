@@ -11,7 +11,7 @@ application.debug = True
 
 application.config.update(dict(
     DATABASE='/home/ec2-user/sports/sports.db',
-    #DATABASE='/Users/tanyacashorali/Documents/Scripts/sports/sports.db',
+    #DATABASE='/Users/tanyacashorali/sports/sports.db',
     DEBUG=True,
     SECRET_KEY = open("/dev/random","rb").read(32)
     #USERNAME='admin',
@@ -69,10 +69,10 @@ def date_select():
         cur2NCAA = db.execute("select * FROM NCAAstats s, games g where s.game_id = g.game_id and game_date = ?", (session['game_date'],))
         game_ids = curNCAA.fetchall()
         game_ids = list(set(game_ids))
-        stats = cur2NCAA.fetchall()
+        stats2 = cur2NCAA.fetchall()
         db.close()
-        if(len(stats) > 0):
-            result = pd.DataFrame(stats)
+        if(len(stats2) > 0):
+            result = pd.DataFrame(stats2)
             result.index = result[0]
             resultsNCAA = []
             timesNCAA = []
@@ -85,10 +85,14 @@ def date_select():
                 result2.index = ['FGM-A', 'TPM-A', 'FTM-A', 'OREB', 'DREB', 'REB', 'AST', 'STL', 'BLK', 'TO', 'PF', 'PTS']
                 resultsNCAA.append(result2)
                 timesNCAA.append(game_ids[i][1])
-        else:
-            return(render_template('index.html', error='No Box Scores'))
-        return render_template('index.html', resultsNCF=resultsNCAA, timesNCF=timesNCF, resultsNCAA=resultsNCAA, timesNCAA=timesNCAA, game_date=session['game_date'])
-
+    if len(stats) > 0 & len(stats2) > 0:
+        return render_template('index.html', resultsNCF=resultsNCF, timesNCF=timesNCF, resultsNCAA=resultsNCAA, timesNCAA=timesNCAA)
+    elif len(stats) == 0 & len(stats2) > 0:
+        return render_template('index.html', resultsNCAA=resultsNCAA, timesNCAA=timesNCAA)
+    elif len(stats) > 0 & len(stats2) == 0:
+        return render_template('index.html', resultsNCF=resultsNCF, timesNCF=timesNCF)
+    elif len(stats) == 0 & len(stats2) == 0:
+        return render_template('index.html', error='No Box Scores') 
 
 @application.route('/')
 def show_entries():
@@ -102,8 +106,8 @@ def show_entries():
         if(len(stats) > 0):
    	    result = pd.DataFrame(stats)
             result.index = result[0]
-            results = []
-            times = []
+            resultsNCF = []
+            timesNCF = []
             for i in range (0, len(game_ids)):
                 result2 = result.ix[game_ids[i][0]]
                 teams = result2[1]
@@ -111,16 +115,16 @@ def show_entries():
                 result2.columns = teams
                 result2 = result2.ix[2:]
                 result2.index = ['First Downs', 'Third Downs', 'Fourth Downs', 'Total Yards', 'Passing', 'Completion Attempts', 'Rushing', 'Rushing Attempts', 'Yards Per Pass', 'Yards Per Rush', 'Penalties', 'Turnovers', 'Fumbles Lost', 'Ints Thrown', 'Possession']    
-                results.append(result2)
-                times.append(game_ids[i][1])
+                resultsNCF.append(result2)
+                timesNCF.append(game_ids[i][1])
         curNCAA = db.execute("select g.game_id, game_date FROM NCAAgames g, NCAAstats s where g.game_id = s.game_id and game_date =?", (time.strftime("%m/%d/%Y"),))
         cur2NCAA = db.execute("select * FROM NCAAstats s, games g where s.game_id = g.game_id and game_date = ?", (time.strftime("%m/%d/%Y"),))
         game_ids = curNCAA.fetchall()
         game_ids = list(set(game_ids))
-        stats = cur2NCAA.fetchall()
+        stats2 = cur2NCAA.fetchall()
         db.close()
-        if(len(stats) > 0):
-            result = pd.DataFrame(stats)
+        if(len(stats2) > 0):
+            result = pd.DataFrame(stats2)
             result.index = result[0]
             resultsNCAA = []
             timesNCAA = []
@@ -133,10 +137,14 @@ def show_entries():
                 result2.index = ['FGM-A', 'TPM-A', 'FTM-A', 'OREB', 'DREB', 'REB', 'AST', 'STL', 'BLK', 'TO', 'PF', 'PTS']
                 resultsNCAA.append(result2)
                 timesNCAA.append(game_ids[i][1])
-        else:
-	        return(render_template('index.html', error='No Box Scores'))
-        return render_template('index.html', resultsNCF=results, timesNCF=times, resultsNCAA=resultsNCAA, timesNCAA=timesNCAA)
-
+    if len(stats) > 0 & len(stats2) > 0:
+        return render_template('index.html', resultsNCF=resultsNCF, timesNCF=timesNCF, resultsNCAA=resultsNCAA, timesNCAA=timesNCAA)
+    elif len(stats) == 0 & len(stats2) > 0:
+        return render_template('index.html', resultsNCAA=resultsNCAA, timesNCAA=timesNCAA)
+    elif len(stats) > 0 & len(stats2) == 0:
+        return render_template('index.html', resultsNCF=resultsNCF, timesNCF=timesNCF)
+    elif len(stats) == 0 & len(stats2) == 0:
+        return render_template('index.html', error='No Box Scores')
 
 if __name__ == '__main__':
     application.run(host='0.0.0.0')
