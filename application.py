@@ -91,7 +91,7 @@ def date_select():
         return render_template('index.html', resultsNCF=resultsNCAA, timesNCF=timesNCF, resultsNCAA=resultsNCAA, timesNCAA=timesNCAA)
 
 
-@application.route('/', methods=['GET', 'POST'])
+@application.route('/')
 def show_entries():
     with application.app_context():
         db = get_db()
