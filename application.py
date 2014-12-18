@@ -97,7 +97,7 @@ def show_entries():
 	        return(render_template('index.html', error='No Box Scores'))
         return render_template('index.html', results=results, times=times)
 
-@application.route('/ncaa')
+@application.route('/ncaa', methods=['GET', 'POST'])
 def ncaa():
     with application.app_context():
         db = get_db()
