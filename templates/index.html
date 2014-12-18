@@ -12,8 +12,15 @@
   </script>
 </head>
 <body>
-<form method="post" action="{{ url_for('date_select') }}">
-<p>Date: <input type="text" id="game_date" name="game_date">
+
+
+<form method="post" id="game_date" action="{{ url_for('date_select_ncf') }};">
+<p>Date: <input type="text" id="ncf_game_date" name="ncf_game_date">
+<button type="submit">Go</button>
+</form>
+
+<form method="post" id="ncaa_date" action="{{ url_for('date_select_ncaa') }};asd();">
+<p>Date: <input type="text" id="ncaa_game_date" name="ncaa_game_date">
 <button type="submit">Go</button>
 </form>
 
@@ -21,7 +28,23 @@
 <button type="submit">NCAA - Coming Soon</button>
  </form>
 
+<form method="post" action="{{url_for('show_entries')}}">
+<button type="submit">NCF</button>
+</form>
+
 <script>
+function asd()
+{
+    if(document.URL=='http://ec2-54-211-40-118.compute-1.amazonaws.com:5000/ncaa')
+    document.getElementById("ncf_game_date").style.display="none";
+    else
+    document.getElementById("ncf_game_date").style.display="block";
+    document.getElementById("ncaa_game_date").style.display="none";
+}
+</script>
+
+<script>
+window.onload=asd();
 var i = 1;
 </script>
 
