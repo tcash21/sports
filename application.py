@@ -98,7 +98,7 @@ def show_entries():
         return render_template('index.html', results=results, times=times)
 
 @application.route('/ncaa')
-def show_NCAAentries():
+def ncaa():
     with application.app_context():
         db = get_db()
         cur = db.execute("select g.game_id, game_date FROM NCAAgames g, NCAAstats s where g.game_id = s.game_id and game_date=?", (time.strftime("%m/%d/%Y"),))
