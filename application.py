@@ -76,7 +76,7 @@ def show_entries():
         cur = db.execute("select g.game_id, game_date FROM games g, stats s where g.game_id = s.game_id and game_date=?", (time.strftime("%m/%d/%Y"),))
         cur2 = db.execute("select * FROM stats s, games g where s.game_id = g.game_id and game_date = ?", (time.strftime("%m/%d/%Y"),))
         game_ids = cur.fetchall()
-	game_ids = list(set(game_ids))
+	    game_ids = list(set(game_ids))
         stats = cur2.fetchall()
         db.close()
         if(len(stats) > 0):
@@ -94,7 +94,35 @@ def show_entries():
                 results.append(result2)
                 times.append(game_ids[i][1])
         else:
-	    return(render_template('index.html', error='No Box Scores'))
+	        return(render_template('index.html', error='No Box Scores'))
+        return render_template('index.html', results=results, times=times)
+
+@application.route('/ncaa')
+def show_entries():
+    with application.app_context():
+        db = get_db()
+        cur = db.execute("select g.game_id, game_date FROM NCAAgames g, NCAAstats s where g.game_id = s.game_id and game_date=?", (time.strftime("%m/%d/%Y"),))
+        cur2 = db.execute("select * FROM stats s, games g where s.game_id = g.game_id and game_date = ?", (time.strftime("%m/%d/%Y"),))
+        game_ids = cur.fetchall()
+        game_ids = list(set(game_ids))
+        stats = cur2.fetchall()
+        db.close()
+        if(len(stats) > 0):
+        result = pd.DataFrame(stats)
+            result.index = result[0]
+            results = []
+            times = []
+        for i in range (0, len(game_ids)):
+                result2 = result.ix[game_ids[i][0]]
+                teams = result2[1]
+                result2 = result2.transpose()
+                result2.columns = teams
+                result2 = result2.ix[2:]
+                result2.index = ['FGM-A', 'TPM-A', 'FTM-A', 'OREB', 'DREB', 'REB', 'AST', 'STL', 'BLK', 'TO', 'PF', 'PTS']    
+                results.append(result2)
+                times.append(game_ids[i][1])
+        else:
+            return(render_template('index.html', error='No Box Scores'))
         return render_template('index.html', results=results, times=times)
 
 if __name__ == '__main__':

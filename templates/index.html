@@ -15,9 +15,11 @@
 <form method="post" action="{{ url_for('date_select') }}">
 <p>Date: <input type="text" id="game_date" name="game_date">
 <button type="submit">Go</button>
-<button>NCAA - Coming Soon</button>
- 
 </form>
+
+<form method="post" action="{{url_for('ncaa')}}">
+<button type="submit">NCAA - Coming Soon</button>
+ </form>
 
 <script>
 var i = 1;
