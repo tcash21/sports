@@ -11,6 +11,7 @@ application.debug = True
 
 application.config.update(dict(
     DATABASE='/home/ec2-user/sports/sports.db',
+    #DATABASE='/Users/tanyacashorali/Documents/Scripts/sports/sports.db',
     DEBUG=True,
     SECRET_KEY = open("/dev/random","rb").read(32)
     #USERNAME='admin',
@@ -102,7 +103,6 @@ def show_entries():
         game_ids = cur.fetchall()
         game_ids = list(set(game_ids))
         stats = cur2.fetchall()
-        db.close()
         if(len(stats) > 0):
    	    result = pd.DataFrame(stats)
             result.index = result[0]
@@ -117,9 +117,8 @@ def show_entries():
                 result2.index = ['First Downs', 'Third Downs', 'Fourth Downs', 'Total Yards', 'Passing', 'Completion Attempts', 'Rushing', 'Rushing Attempts', 'Yards Per Pass', 'Yards Per Rush', 'Penalties', 'Turnovers', 'Fumbles Lost', 'Ints Thrown', 'Possession']    
                 results.append(result2)
                 times.append(game_ids[i][1])
-        db = get_db()
-        curNCAA = db.execute("select g.game_id, game_date FROM NCAAgames g, NCAAstats s where g.game_id = s.game_id and game_date =?", (session['game_date'],))
-        cur2NCAA = db.execute("select * FROM NCAAstats s, games g where s.game_id = g.game_id and game_date = ?", (session['game_date'],))
+        curNCAA = db.execute("select g.game_id, game_date FROM NCAAgames g, NCAAstats s where g.game_id = s.game_id and game_date =?", (time.strftime("%m/%d/%Y"),))
+        cur2NCAA = db.execute("select * FROM NCAAstats s, games g where s.game_id = g.game_id and game_date = ?", (time.strftime("%m/%d/%Y"),))
         game_ids = curNCAA.fetchall()
         game_ids = list(set(game_ids))
         stats = cur2NCAA.fetchall()
@@ -145,3 +144,4 @@ def show_entries():
 
 if __name__ == '__main__':
     application.run(host='0.0.0.0')
+#    application.run()
