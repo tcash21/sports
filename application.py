@@ -80,11 +80,11 @@ def show_entries():
         stats = cur2.fetchall()
         db.close()
         if(len(stats) > 0):
-   	        result = pd.DataFrame(stats)
+   	    result = pd.DataFrame(stats)
             result.index = result[0]
             results = []
             times = []
-	        for i in range (0, len(game_ids)):
+	    for i in range (0, len(game_ids)):
                 result2 = result.ix[game_ids[i][0]]
                 teams = result2[1]
                 result2 = result2.transpose()
