@@ -80,7 +80,7 @@ def show_entries():
         stats = cur2.fetchall()
         db.close()
         if(len(stats) > 0):
-   	    result = pd.DataFrame(stats)
+   	        result = pd.DataFrame(stats)
             result.index = result[0]
             results = []
             times = []
@@ -108,7 +108,7 @@ def show_entries():
         stats = cur2.fetchall()
         db.close()
         if(len(stats) > 0):
-        result = pd.DataFrame(stats)
+            result = pd.DataFrame(stats)
             result.index = result[0]
             results = []
             times = []
