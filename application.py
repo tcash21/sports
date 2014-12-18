@@ -48,7 +48,7 @@ def date_select():
         cur2 = db.execute("select * FROM stats s, games g where s.game_id = g.game_id and game_date = ?", (session['game_date'],))
         game_ids = cur.fetchall()
         game_ids = list(set(game_ids))
-	stats = cur2.fetchall()
+        stats = cur2.fetchall()
         db.close()
         if(len(stats) > 0):
             result = pd.DataFrame(stats)
