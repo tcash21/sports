@@ -40,7 +40,7 @@ def close_connection(exception):
     if db is not None:
         db.close()
 
-@application.route('/date_select', methods=['POST'])
+@application.route('/date_select', methods=['POST', 'GET'])
 def date_select():
     session['game_date'] = request.form['game_date']
     with application.app_context():
@@ -85,10 +85,9 @@ def date_select():
                 result2.index = ['FGM-A', 'TPM-A', 'FTM-A', 'OREB', 'DREB', 'REB', 'AST', 'STL', 'BLK', 'TO', 'PF', 'PTS']
                 resultsNCAA.append(result2)
                 timesNCAA.append(game_ids[i][1])
-
         else:
             return(render_template('index.html', error='No Box Scores'))
-        return render_template('index.html', resultsNCF=resultsNCAA, timesNCF=timesNCF, resultsNCAA=resultsNCAA, timesNCAA=timesNCAA)
+        return render_template('index.html', resultsNCF=resultsNCAA, timesNCF=timesNCF, resultsNCAA=resultsNCAA, timesNCAA=timesNCAA, game_date=session['game_date'])
 
 
 @application.route('/')
