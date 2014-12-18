@@ -39,8 +39,8 @@ def close_connection(exception):
     if db is not None:
         db.close()
 
-@application.route('/date_select_ncf', methods=['POST'])
-def date_select_ncf():
+@application.route('/date_select', methods=['POST'])
+def date_select():
     session['game_date'] = request.form['game_date']
     with application.app_context():
         db = get_db()
@@ -53,8 +53,8 @@ def date_select_ncf():
         if(len(stats) > 0):
             result = pd.DataFrame(stats)
             result.index = result[0]
-            results = []
-            times = []
+            resultsNCF = []
+            timesNCF = []
             for i in range (0, len(game_ids)):
                 result2 = result.ix[game_ids[i][0]]
                 teams = result2[1]
@@ -63,28 +63,21 @@ def date_select_ncf():
                 result2 = result2.ix[2:16]
                 result2.index = ['First Downs', 'Third Downs', 'Fourth Downs', 'Total Yards', 'Passing', 'Completion Attempts', 'Rushing', 'Rushing Attempts', 'Yards Per Pass', 'Yards Per Rush', 'Penalties', 'Turnovers', \
 'Fumbles Lost', 'Ints Thrown', 'Possession']
-                results.append(result2)
-                times.append(game_ids[i][1])
-        else:
-            return(render_template('index.html', error='No Box Scores'))
-        return render_template('index.html', results=results, times=times)
-
-@application.route('/date_select_ncaa', methods=['POST'])
-def date_select_ncaa():
-    session['game_date'] = request.form['game_date']
-    with application.app_context():
+                resultsNCF.append(result2)
+                timesNCF.append(game_ids[i][1])
+        
         db = get_db()
-        cur = db.execute("select g.game_id, game_date FROM NCAAgames g, NCAAstats s where g.game_id = s.game_id and game_date =?", (session['game_date'],))
-        cur2 = db.execute("select * FROM NCAAstats s, games g where s.game_id = g.game_id and game_date = ?", (session['game_date'],))
-        game_ids = cur.fetchall()
+        curNCAA = db.execute("select g.game_id, game_date FROM NCAAgames g, NCAAstats s where g.game_id = s.game_id and game_date =?", (session['game_date'],))
+        cur2NCAA = db.execute("select * FROM NCAAstats s, games g where s.game_id = g.game_id and game_date = ?", (session['game_date'],))
+        game_ids = curNCAA.fetchall()
         game_ids = list(set(game_ids))
-        stats = cur2.fetchall()
+        stats = cur2NCAA.fetchall()
         db.close()
         if(len(stats) > 0):
             result = pd.DataFrame(stats)
             result.index = result[0]
-            results = []
-            times = []
+            resultsNCAA = []
+            timesNCAA = []
             for i in range (0, len(game_ids)):
                 result2 = result.ix[game_ids[i][0]]
                 teams = result2[1]
@@ -92,11 +85,13 @@ def date_select_ncaa():
                 result2.columns = teams
                 result2 = result2.ix[2:16]
                 result2.index = ['FGM-A', 'TPM-A', 'FTM-A', 'OREB', 'DREB', 'REB', 'AST', 'STL', 'BLK', 'TO', 'PF', 'PTS']
-                results.append(result2)
-                times.append(game_ids[i][1])
+                resultsNCAA.append(result2)
+                timesNCAA.append(game_ids[i][1])
+
         else:
             return(render_template('index.html', error='No Box Scores'))
-        return render_template('index.html', results=results, times=times)
+        return render_template('index.html', resultsNCF=resultsNCAA, timesNCF=timesNCF, resultsNCAA=resultsNCAA, timesNCAA=timesNCAA)
+
 
 @application.route('/', methods=['GET', 'POST'])
 def show_entries():
@@ -109,7 +104,7 @@ def show_entries():
         stats = cur2.fetchall()
         db.close()
         if(len(stats) > 0):
-   	    result = pd.DataFrame(stats)
+   	        result = pd.DataFrame(stats)
             result.index = result[0]
             results = []
             times = []
@@ -122,37 +117,31 @@ def show_entries():
                 result2.index = ['First Downs', 'Third Downs', 'Fourth Downs', 'Total Yards', 'Passing', 'Completion Attempts', 'Rushing', 'Rushing Attempts', 'Yards Per Pass', 'Yards Per Rush', 'Penalties', 'Turnovers', 'Fumbles Lost', 'Ints Thrown', 'Possession']    
                 results.append(result2)
                 times.append(game_ids[i][1])
-        else:
-	        return(render_template('index.html', error='No Box Scores'))
-        return render_template('index.html', results=results, times=times)
-
-@application.route('/ncaa', methods=['GET', 'POST'])
-def ncaa():
-    with application.app_context():
         db = get_db()
-        cur = db.execute("select g.game_id, game_date FROM NCAAgames g, NCAAstats s where g.game_id = s.game_id and game_date=?", (time.strftime("%m/%d/%Y"),))
-        cur2 = db.execute("select * FROM stats s, games g where s.game_id = g.game_id and game_date = ?", (time.strftime("%m/%d/%Y"),))
-        game_ids = cur.fetchall()
+        curNCAA = db.execute("select g.game_id, game_date FROM NCAAgames g, NCAAstats s where g.game_id = s.game_id and game_date =?", (session['game_date'],))
+        cur2NCAA = db.execute("select * FROM NCAAstats s, games g where s.game_id = g.game_id and game_date = ?", (session['game_date'],))
+        game_ids = curNCAA.fetchall()
         game_ids = list(set(game_ids))
-        stats = cur2.fetchall()
+        stats = cur2NCAA.fetchall()
         db.close()
         if(len(stats) > 0):
             result = pd.DataFrame(stats)
             result.index = result[0]
-            results = []
-            times = []
+            resultsNCAA = []
+            timesNCAA = []
             for i in range (0, len(game_ids)):
                 result2 = result.ix[game_ids[i][0]]
                 teams = result2[1]
                 result2 = result2.transpose()
                 result2.columns = teams
-                result2 = result2.ix[2:]
-                result2.index = ['FGM-A', 'TPM-A', 'FTM-A', 'OREB', 'DREB', 'REB', 'AST', 'STL', 'BLK', 'TO', 'PF', 'PTS']    
-                results.append(result2)
-                times.append(game_ids[i][1])
+                result2 = result2.ix[2:16]
+                result2.index = ['FGM-A', 'TPM-A', 'FTM-A', 'OREB', 'DREB', 'REB', 'AST', 'STL', 'BLK', 'TO', 'PF', 'PTS']
+                resultsNCAA.append(result2)
+                timesNCAA.append(game_ids[i][1])
         else:
-            return(render_template('index.html', error='No Box Scores'))
-        return render_template('index.html', results=results, times=times)
+	        return(render_template('index.html', error='No Box Scores'))
+        return render_template('index.html', resultsNCF=results, timesNCF=times, resultsNCAA=resultsNCAA, timesNCAA=timesNCAA)
+
 
 if __name__ == '__main__':
     application.run(host='0.0.0.0')
