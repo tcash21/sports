@@ -66,7 +66,7 @@ def date_select():
                 resultsNCF.append(result2)
                 timesNCF.append(game_ids[i][1])
         curNCAA = db.execute("select g.game_id, game_date FROM NCAAgames g, NCAAstats s where g.game_id = s.game_id and game_date =?", (session['game_date'],))
-        cur2NCAA = db.execute("select * FROM NCAAstats s, games g where s.game_id = g.game_id and game_date = ?", (session['game_date'],))
+        cur2NCAA = db.execute("select * FROM NCAAstats s, NCAAgames g where s.game_id = g.game_id and game_date = ?", (session['game_date'],))
         game_ids = curNCAA.fetchall()
         game_ids = list(set(game_ids))
         stats2 = cur2NCAA.fetchall()
@@ -81,17 +81,17 @@ def date_select():
                 teams = result2[1]
                 result2 = result2.transpose()
                 result2.columns = teams
-                result2 = result2.ix[2:16]
+                result2 = result2.ix[2:13]
                 result2.index = ['FGM-A', 'TPM-A', 'FTM-A', 'OREB', 'DREB', 'REB', 'AST', 'STL', 'BLK', 'TO', 'PF', 'PTS']
                 resultsNCAA.append(result2)
                 timesNCAA.append(game_ids[i][1])
-    if len(stats) > 0 & len(stats2) > 0:
+    if len(stats) > 0 and len(stats2) > 0:
         return render_template('index.html', resultsNCF=resultsNCF, timesNCF=timesNCF, resultsNCAA=resultsNCAA, timesNCAA=timesNCAA)
-    elif len(stats) == 0 & len(stats2) > 0:
+    elif len(stats) == 0 and len(stats2) > 0:
         return render_template('index.html', resultsNCAA=resultsNCAA, timesNCAA=timesNCAA)
-    elif len(stats) > 0 & len(stats2) == 0:
+    elif len(stats) > 0 and len(stats2) == 0:
         return render_template('index.html', resultsNCF=resultsNCF, timesNCF=timesNCF)
-    elif len(stats) == 0 & len(stats2) == 0:
+    else:
         return render_template('index.html', error='No Box Scores') 
 
 @application.route('/')
@@ -133,17 +133,17 @@ def show_entries():
                 teams = result2[1]
                 result2 = result2.transpose()
                 result2.columns = teams
-                result2 = result2.ix[2:16]
+                result2 = result2.ix[2:13]
                 result2.index = ['FGM-A', 'TPM-A', 'FTM-A', 'OREB', 'DREB', 'REB', 'AST', 'STL', 'BLK', 'TO', 'PF', 'PTS']
                 resultsNCAA.append(result2)
                 timesNCAA.append(game_ids[i][1])
-    if len(stats) > 0 & len(stats2) > 0:
+    if len(stats) > 0 and len(stats2) > 0:
         return render_template('index.html', resultsNCF=resultsNCF, timesNCF=timesNCF, resultsNCAA=resultsNCAA, timesNCAA=timesNCAA)
-    elif len(stats) == 0 & len(stats2) > 0:
+    elif len(stats) == 0 and len(stats2) > 0:
         return render_template('index.html', resultsNCAA=resultsNCAA, timesNCAA=timesNCAA)
-    elif len(stats) > 0 & len(stats2) == 0:
+    elif len(stats) > 0 and len(stats2) == 0:
         return render_template('index.html', resultsNCF=resultsNCF, timesNCF=timesNCF)
-    elif len(stats) == 0 & len(stats2) == 0:
+    else:
         return render_template('index.html', error='No Box Scores')
 
 if __name__ == '__main__':
