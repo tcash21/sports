@@ -118,7 +118,7 @@ def show_entries():
                 resultsNCF.append(result2)
                 timesNCF.append(game_ids[i][1])
         curNCAA = db.execute("select g.game_id, game_date FROM NCAAgames g, NCAAstats s where g.game_id = s.game_id and game_date =?", (time.strftime("%m/%d/%Y"),))
-        cur2NCAA = db.execute("select * FROM NCAAstats s, games g where s.game_id = g.game_id and game_date = ?", (time.strftime("%m/%d/%Y"),))
+        cur2NCAA = db.execute("select * FROM NCAAstats s, NCAAgames g where s.game_id = g.game_id and game_date = ?", (time.strftime("%m/%d/%Y"),))
         game_ids = curNCAA.fetchall()
         game_ids = list(set(game_ids))
         stats2 = cur2NCAA.fetchall()
