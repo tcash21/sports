@@ -19,7 +19,7 @@ def index():
     halftime_ids = []
     url = urllib2.urlopen('http://scores.espn.go.com/ncb/scoreboard')
     soup = bs(url.read(), ['fast', 'lxml'])
-    links = soup.findAll('a', href=re.compile('conversation|preview.*'))
+    links = soup.findAll('a', href=re.compile('conversation.*'))
     urls = [link.get('href') for link in links]
     link_strings = [l['href'] for l in links]
     ## freeze updates at the half
