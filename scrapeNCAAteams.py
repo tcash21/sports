@@ -22,6 +22,11 @@ def index():
     links = soup.findAll('a', href=re.compile('conversation.*'))
     urls = [link.get('href') for link in links]
     link_strings = [l['href'] for l in links]
+    game_status = soup.findAll('div', {'class':'game-status'})
+    g_status = [g.text for g in game_status]
+    remove = [v == 'Final' for v in g_status]
+    remove_indices = [j for j, x in enumerate(remove) if x]
+    link_strings = [j for k, j in enumerate(link_strings) if k not in remove_indices]
     ## freeze updates at the half
     for i in range(0, len(link_strings)):
         print str(i) + ' out of ' + str(len(link_strings)) + ' teams.'
