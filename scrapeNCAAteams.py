@@ -47,7 +47,7 @@ def index():
                 db.execute('''INSERT INTO NCAAseasonstats(team, the_date, min, fgm, fga, ftm, fta, tpm, tpa, pts, offr, defr, reb, ast, turnovers, stl, blk) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)''', (team1, time.strftime("%m/%d/%Y"),values[1],int(values[2]),int(values[3]),int(values[4]),int(values[5]),int(values[6]),int(values[7]),int(values[8]),int(values[9]),int(values[10]),int(values[11]),int(values[12]),int(values[13]),int(values[14]),int(values[15])))
                 db.commit()
         except sqlite3.IntegrityError:
-            print 'Error inserting data'
+            print 'Record Exists'
         team2_url = urllib2.urlopen('http://espn.go.com/mens-college-basketball/team/stats/_/id/' + team2_id)
         soup2 = bs(team2_url.read(), ['fast', 'lxml'])
         totals = soup2.find_all('tr', {'class':'total'})[1]
@@ -61,7 +61,7 @@ def index():
                 db.execute('''INSERT INTO NCAAseasonstats(team, the_date, min, fgm, fga, ftm, fta, tpm, tpa, pts, offr, defr, reb, ast, turnovers, stl, blk) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)''', (team2, time.strftime("%m/%d/%Y"),values[1],int(values[2]),int(values[3]),int(values[4]),int(values[5]),int(values[6]),int(values[7]),int(values[8]),int(values[9]),int(values[10]),int(values[11]),int(values[12]),int(values[13]),int(values[14]),int(values[15])))
                 db.commit()
         except sqlite3.IntegrityError:
-            print 'Error inserting data'
+            print 'Record Exists'
 
 index()
 db.close()
