@@ -26,6 +26,7 @@ def index():
     for i in range(0, len(link_strings)):
         print str(i) + ' out of ' + str(len(link_strings)) + ' teams.'
         espn = 'http://espn.go.com' + link_strings[i]
+        print espn
         #id = re.search('=(\d+)', link_strings[i]).group(1)
         url = urllib2.urlopen(espn)
         soup = bs(url.read(), ['fast', 'lxml'])
