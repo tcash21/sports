@@ -45,7 +45,8 @@ CREATE TABLE NCAAseasonstats(
 		ast INT NOT NULL,
 		turnovers INT NOT NULL,
 		stl INT NOT NULL,
-                blk INT NOT NULL
+                blk INT NOT NULL,
+ 		PRIMARY KEY (team, the_date)
 );
 
 CREATE TABLE NCAAstats(
