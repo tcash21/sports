@@ -42,32 +42,40 @@ def index():
         team2_id = re.search('id/(\d+)/', teams[1].a['href']).group(1)
         team1_url = urllib2.urlopen('http://espn.go.com/mens-college-basketball/team/stats/_/id/' + team1_id)
         soup1 = bs(team1_url.read(), ['fast', 'lxml'])
-        totals = soup1.find_all('tr', {'class':'total'})[1]
-        data = totals.findAll('td')
-        values = [d.text for d in data]
-        cols = soup1.findAll('tr', {'class':'colhead'})[1]
-        colnames = cols.findAll('a')
-        colnames = [c.text for c in colnames]
+        ## e.g. no season stats for http://espn.go.com/mens-college-basketball/team/stats/_/id/2395
         try:
-            with db:
-                db.execute('''INSERT INTO NCAAseasonstats(team, the_date, min, fgm, fga, ftm, fta, tpm, tpa, pts, offr, defr, reb, ast, turnovers, stl, blk) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)''', (team1, time.strftime("%m/%d/%Y"),values[1],int(values[2]),int(values[3]),int(values[4]),int(values[5]),int(values[6]),int(values[7]),int(values[8]),int(values[9]),int(values[10]),int(values[11]),int(values[12]),int(values[13]),int(values[14]),int(values[15])))
-                db.commit()
-        except sqlite3.IntegrityError:
-            print 'Record Exists'
+            totals = soup1.find_all('tr', {'class':'total'})[1]
+            data = totals.findAll('td')
+            values = [d.text for d in data]
+            cols = soup1.findAll('tr', {'class':'colhead'})[1]
+            colnames = cols.findAll('a')
+            colnames = [c.text for c in colnames]
+            try:
+                with db:
+                    db.execute('''INSERT INTO NCAAseasonstats(team, the_date, min, fgm, fga, ftm, fta, tpm, tpa, pts, offr, defr, reb, ast, turnovers, stl, blk) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)''', (team1, time.strftime("%m/%d/%Y"),values[1],int(values[2]),int(values[3]),int(values[4]),int(values[5]),int(values[6]),int(values[7]),int(values[8]),int(values[9]),int(values[10]),int(values[11]),int(values[12]),int(values[13]),int(values[14]),int(values[15])))
+                    db.commit()
+            except sqlite3.IntegrityError:
+                print 'Record Exists'
+        except:
+            print 'No stats for team'
+
         team2_url = urllib2.urlopen('http://espn.go.com/mens-college-basketball/team/stats/_/id/' + team2_id)
         soup2 = bs(team2_url.read(), ['fast', 'lxml'])
-        totals = soup2.find_all('tr', {'class':'total'})[1]
-        data = totals.findAll('td')
-        values = [d.text for d in data]
-        cols = soup2.findAll('tr', {'class':'colhead'})[1]
-        colnames = cols.findAll('a')
-        colnames = [c.text for c in colnames]
         try:
-            with db:
-                db.execute('''INSERT INTO NCAAseasonstats(team, the_date, min, fgm, fga, ftm, fta, tpm, tpa, pts, offr, defr, reb, ast, turnovers, stl, blk) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)''', (team2, time.strftime("%m/%d/%Y"),values[1],int(values[2]),int(values[3]),int(values[4]),int(values[5]),int(values[6]),int(values[7]),int(values[8]),int(values[9]),int(values[10]),int(values[11]),int(values[12]),int(values[13]),int(values[14]),int(values[15])))
-                db.commit()
-        except sqlite3.IntegrityError:
-            print 'Record Exists'
+            totals = soup2.find_all('tr', {'class':'total'})[1]
+            data = totals.findAll('td')
+            values = [d.text for d in data]
+            cols = soup2.findAll('tr', {'class':'colhead'})[1]
+            colnames = cols.findAll('a')
+            colnames = [c.text for c in colnames]
+            try:
+                with db:
+                    db.execute('''INSERT INTO NCAAseasonstats(team, the_date, min, fgm, fga, ftm, fta, tpm, tpa, pts, offr, defr, reb, ast, turnovers, stl, blk) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)''', (team2, time.strftime("%m/%d/%Y"),values[1],int(values[2]),int(values[3]),int(values[4]),int(values[5]),int(values[6]),int(values[7]),int(values[8]),int(values[9]),int(values[10]),int(values[11]),int(values[12]),int(values[13]),int(values[14]),int(values[15])))
+                    db.commit()
+            except sqlite3.IntegrityError:
+                print 'Record Exists'
+        except:
+            print 'No stats for team'
 
 index()
 db.close()
