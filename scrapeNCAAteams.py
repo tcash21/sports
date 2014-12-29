@@ -36,7 +36,7 @@ def index():
         colnames = [c.text for c in colnames]
         clubhouse = urllib2.urlopen('http://espn.go.com/mens-college-basketball/team/_/id/' + str(id))
         clubsoup = bs(clubhouse.read(), ['fast', 'lxml'])
-        recap = clubsoup.findAll('a', href=re.compile('recap'))[0]['href']
+        recap = clubsoup.findAll('a', href=re.compile('boxscore'))[0]['href']
         a_url = urllib2.urlopen('http://espn.go.com' + recap)
         recapsoup = bs(a_url.read(), ['fast', 'lxml'])
         team = recapsoup.findAll('td', {'class':'team'})
