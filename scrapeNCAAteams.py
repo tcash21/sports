@@ -40,8 +40,14 @@ def index():
         a_url = urllib2.urlopen('http://espn.go.com' + recap)
         recapsoup = bs(a_url.read(), ['fast', 'lxml'])
         team = recapsoup.findAll('td', {'class':'team'})
-        id1 = int(re.search('id/(\d+)/', str(team[1])).group(1))
-        id2 = int(re.search('id/(\d+)/', str(team[2])).group(1))
+        try:
+            id1 = int(re.search('id/(\d+)/', str(team[1])).group(1))
+        except:
+            print 'No ID'
+        try:
+            id2 = int(re.search('id/(\d+)/', str(team[2])).group(1))
+        except:
+            print 'No ID'
         abbr = ''
         if id == id1:
             abbr = team[1].text
