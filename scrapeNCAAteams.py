@@ -19,7 +19,7 @@ def index():
     halftime_ids = []
     url = urllib2.urlopen('http://scores.espn.go.com/ncb/scoreboard')
     soup = bs(url.read(), ['fast', 'lxml'])
-    links = soup.findAll('a', href=re.compile('preview.*'))
+    links = soup.findAll('a', href=re.compile('conversation|preview.*'))
     urls = [link.get('href') for link in links]
     link_strings = [l['href'] for l in links]
     ## freeze updates at the half
@@ -30,8 +30,12 @@ def index():
         url = urllib2.urlopen(espn)
         soup = bs(url.read(), ['fast', 'lxml'])
         teams = soup.findAll('td', {'class':'team'})
-        team1 = teams[0].strong.text
-        team2 = teams[1].strong.text
+        if re.search('preview', espn):
+            team1 = teams[0].strong.text
+            team2 = teams[1].strong.text
+        else:
+            team1 = teams[1].text
+            team2 = teams[2].text
         team1_id = re.search('id/(\d+)/', teams[0].a['href']).group(1)
         team2_id = re.search('id/(\d+)/', teams[1].a['href']).group(1)
         team1_url = urllib2.urlopen('http://espn.go.com/mens-college-basketball/team/stats/_/id/' + team1_id)
