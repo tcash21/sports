@@ -113,8 +113,7 @@ def show_entries():
                 result2 = result2.transpose()
                 result2.columns = teams
                 result2 = result2.ix[2:16]
-                result2.index = ['First Downs', 'Third Downs', 'Fourth Downs', 'Total Yards', 'Passing', 'Completion Attempts', 'Rushing', 'Rushing Attempts', /
-'Yards Per Pass', 'Yards Per Rush', 'Penalties', 'Turnovers', 'Fumbles Lost', 'Ints Thrown', 'Possession']    
+                result2.index = ['First Downs', 'Third Downs', 'Fourth Downs', 'Total Yards', 'Passing', 'Completion Attempts', 'Rushing', 'Rushing Attempts', 'Yards Per Pass', 'Yards Per Rush', 'Penalties', 'Turnovers', 'Fumbles Lost', 'Ints Thrown', 'Possession']    
                 resultsNCF.append(result2)
                 timesNCF.append(game_ids[i][1])
         curNCAA = db.execute("select g.game_id, game_date FROM NCAAgames g, NCAAstats s where g.game_id = s.game_id and game_date =?", (time.strftime("%m/%d/%Y"),))
