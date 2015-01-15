@@ -4,7 +4,7 @@ import urllib2
 import time
 import re
 import random
-import datetime
+from datetime import date
 import os
 import sqlite3
 import pandas as pd
