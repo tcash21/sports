@@ -4,7 +4,7 @@ import urllib2
 import time
 import re
 import random
-import datetime
+from datetime import date
 import os
 import sqlite3
 import pandas as pd
@@ -17,6 +17,7 @@ def index():
     print "entered index"
     times = []
     halftime_ids = []
+    today = date.today()
     today = today.strftime("%Y%m%d")
     url = urllib2.urlopen('http://scores.espn.go.com/ncb/scoreboard?date=' + today + '&confId=50')
     soup = bs(url.read(), ['fast', 'lxml'])
