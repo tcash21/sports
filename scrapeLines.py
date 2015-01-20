@@ -12,6 +12,8 @@ from urlparse import urlparse
 from bs4 import BeautifulSoup as bs
 from datetime import date
 
+db = sqlite3.connect('/home/ec2-user/sports/sports.db')
+
 url = urllib2.urlopen('http://www.covers.com/odds/basketball/college-basketball-odds.aspx')
 soup = bs(url.read(), ['fast', 'lxml'])
 tables = soup.findAll('table')
@@ -21,7 +23,6 @@ home = lines.findAll('div', {'class':'team_home'})
 covers = lines.findAll('td', {'class':'covers_top'})
 today = date.today()
 today = today.strftime("%m/%d/%Y")
-date_time = str(datetime.datetime.now())
 
 lines = []
 spreads = []
@@ -42,3 +43,14 @@ home_teams = [h.text for h in h_teams]
 ## remove @ symbol for home teams
 home_teams = [re.sub('@', '', h) for h in home_teams]
 
+date_time = str(datetime.datetime.now())
+
+for i in range(0, len(away_teams)):
+    try:
+        with db:
+            db.execute('''INSERT INTO NCAALines(away_team, home_team, line, spread, game_date, game_time) VALUES(?,?,?,?,?,?)''', (away_teams[i], home_teams[i], lines[i], spreads[i], today, date_time)
+            db.commit()
+    except sqlite3.IntegrityError:
+        print 'Record Exists'
+
+db.close()
