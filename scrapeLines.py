@@ -10,6 +10,7 @@ import sqlite3
 import pandas as pd
 from urlparse import urlparse
 from bs4 import BeautifulSoup as bs
+from datetime import date
 
 url = urllib2.urlopen('http://www.covers.com/odds/basketball/college-basketball-odds.aspx')
 soup = bs(url.read(), ['fast', 'lxml'])
@@ -18,14 +19,20 @@ lines = tables[2]
 away = lines.findAll('div', {'class':'team_away'})
 home = lines.findAll('div', {'class':'team_home'})
 covers = lines.findAll('td', {'class':'covers_top'})
+today = date.today()
+today = today.strftime("%m/%d/%Y")
+date_time = str(datetime.datetime.now())
+
+lines = []
+spreads = []
 
 for i in range(0, len(covers)):
     line = covers[i].find('div', {'class':'line_top'}).text
-    line_number = re.search('\d+\.*\d*|OFF', line).group(0)
-    print line_number
+    line_number = re.search('\d+\.*\d*|\w+', line).group(0)
+    lines.append(line_number)
     spread = covers[i].find('div', {'class':'covers_bottom'}).text
-    spread_number = re.search('[-|+]\d+\.*\d*|OFF', spread).group(0)
-    print spread_number
+    spread_number = re.search('[-|+]\d+\.*\d*|\w+', spread).group(0)
+    spreads.append(spread_number)
  
 a_teams = filter(None, [a.strong for a in away])
 h_teams = filter(None, [h.strong for h in home])
