@@ -53,4 +53,12 @@ for i in range(0, len(away_teams)):
     except sqlite3.IntegrityError:
         print 'Record Exists'
 
+for i in range(0, len(away_teams)):
+    try:
+        with db:
+            db.execute('''INSERT INTO NCAAteamlookup(covers_team, espn_abbr) VALUES (?,?)''', (away_teams[i], None))
+            db.execute('''INSERT INTO NCAAteamlookup(covers_team, espn_abbr) VALUES (?,?)''', (home_teams[i], None))
+    except:
+        print 'Record Exists'
+
 db.close()
