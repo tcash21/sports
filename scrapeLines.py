@@ -48,7 +48,7 @@ date_time = str(datetime.datetime.now())
 for i in range(0, len(away_teams)):
     try:
         with db:
-            db.execute('''INSERT INTO NCAALines(away_team, home_team, line, spread, game_date, game_time) VALUES(?,?,?,?,?,?)''', (away_teams[i], home_teams[i], lines[i], spreads[i], today, date_time)
+            db.execute('''INSERT INTO NCAALines(away_team, home_team, line, spread, game_date, game_time) VALUES(?,?,?,?,?,?)''', (away_teams[i], home_teams[i], lines[i], spreads[i], today, date_time))
             db.commit()
     except sqlite3.IntegrityError:
         print 'Record Exists'
