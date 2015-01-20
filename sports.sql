@@ -77,7 +77,7 @@ CREATE TABLE NCAAlines(
 	away_team CHAR(40) NOT NULL,
 	home_team CHAR(40) NOT NULL,
 	line CHAR(10) NOT NULL,
-	spread CHAR(10) NOT NULL
+	spread CHAR(10) NOT NULL,
 	game_date TEXT NOT NULL,
  	game_time TEXT NOT NULL,
 	PRIMARY KEY (away_team, home_team, game_date, line, spread)
