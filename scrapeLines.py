@@ -21,14 +21,17 @@ covers = lines.findAll('td', {'class':'covers_top'})
 
 for i in range(0, len(covers)):
     line = covers[i].find('div', {'class':'line_top'}).text
-    line_number = float(re.search('\d+\.*\d*', line).group(0))
+    line_number = re.search('\d+\.*\d*|OFF', line).group(0)
     print line_number
     spread = covers[i].find('div', {'class':'covers_bottom'}).text
-    spread_number = float(re.search('[-|+]\d+\.*\d*', spread).group(0))
+    spread_number = re.search('[-|+]\d+\.*\d*|OFF', spread).group(0)
     print spread_number
-
+ 
 a_teams = filter(None, [a.strong for a in away])
 h_teams = filter(None, [h.strong for h in home])
 
 away_teams = [a.text for a in a_teams]
 home_teams = [h.text for h in h_teams]
+## remove @ symbol for home teams
+home_teams = [re.sub('@', '', h) for h in home_teams]
+
