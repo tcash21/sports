@@ -83,6 +83,16 @@ CREATE TABLE NCAAlines(
 	PRIMARY KEY (away_team, home_team, game_date, line, spread)
 );
 
+CREATE TABLE NCAAHalflines(
+        away_team CHAR(40) NOT NULL,
+        home_team CHAR(40) NOT NULL,
+        line CHAR(10) NOT NULL,
+        spread CHAR(10) NOT NULL,
+        game_date TEXT NOT NULL,
+        game_time TEXT NOT NULL,
+        PRIMARY KEY (away_team, home_team, game_date, line, spread)
+);
+
 CREATE TABLE NCAAteamlookup(
 	covers_team CHAR(40) NOT NULL,
 	espn_abbr CHAR(5),
