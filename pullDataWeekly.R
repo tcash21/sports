@@ -11,7 +11,8 @@ lDataFrames <- vector("list", length=length(tables))
 ## create a data.frame for each table
 for (i in seq(along=tables)) {
   if(tables[[i]] == 'NCAAHalflines' | tables[[i]] == 'NCAAlines'){
-  lDataFrames[[i]] <- dbGetQuery(conn=con, statement=paste("SELECT away_team, home_team, game_date, line, spread, max(game_time) as game_time from ", tables[[i]], " group by away_team, home_team, game_date;"))
+  lDataFrames[[i]] <- dbGetQuery(conn=con, statement=paste("SELECT away_team, home_team, game_date, line, spread, max(game_time) as game_time from ", tables[[i]], " 
+	group by away_team, home_team, game_date;"))
   } else {
   	lDataFrames[[i]] <- dbGetQuery(conn=con, statement=paste("SELECT * FROM '", tables[[i]], "'", sep=""))
   }
@@ -64,8 +65,14 @@ all <- all[,-1]
 all$key <- paste(all$game_id, all$team.y)
 all<-all[match(unique(all$key), all$key),]
 
-colnames(all) <- c("GAME_ID","TEAM","FGM-A","3PM-A","FTM-A","OREB","DREB","REB","AST","STL","BLK","TO","PF","PTS","TEAM1","TEAM2","GAME_DATE","REMOVE1","REMOVE2","REMOVE3","SEASON_FGM","SEASON_FGA","SEASON_FTM","SEASON_FTA","SEASON_3PM","SEASON_3PA","SEASON_PTS","SEASON_OFFR","SEASON_DEFR","SEASON_REB","SEASON_AST","SEASON_TO","SEASON_STL","SEASON_BLK","REMOVE4","REMOVE5","REMOVE6","REMOVE7","REMOVE8","REMOVE9","LINE", "SPREAD", "COVERS_UPDATE","LINE_HALF", "SPREAD_HALF", "COVERS_HALF_UPDATE", "REMOVE11")
+colnames(all) <- c("GAME_ID","TEAM","FGM-A","3PM-A","FTM-A","OREB","DREB","REB","AST","STL","BLK","TO","PF","PTS","TEAM1","TEAM2","GAME_DATE","REMOVE1","REMOVE2","REMOVE3",
+"SEASON_FGM","SEASON_FGA","SEASON_FTM","SEASON_FTA","SEASON_3PM","SEASON_3PA","SEASON_PTS","SEASON_OFFR","SEASON_DEFR","SEASON_REB","SEASON_AST","SEASON_TO","SEASON_STL",
+"SEASON_BLK","REMOVE4","REMOVE5","REMOVE6","REMOVE7","REMOVE8","REMOVE9","LINE", "SPREAD", "COVERS_UPDATE","LINE_HALF", "SPREAD_HALF", "COVERS_HALF_UPDATE", "REMOVE11")
 all <- all[,-grep("REMOVE", colnames(all))]
+
+all[,3]<-paste0("=\"", all[,3], "\"")
+all[,4]<-paste0("=\"", all[,4], "\"")
+all[,5]<-paste0("=\"", all[,5], "\"")
 
 write.csv(all, file="testfile.csv", row.names=FALSE)
 
