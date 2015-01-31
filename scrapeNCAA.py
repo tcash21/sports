@@ -1,5 +1,6 @@
 __author__ = 'tanyacashorali'
 
+import random
 import urllib2
 import time
 import re
@@ -13,6 +14,10 @@ from urlparse import urlparse
 from bs4 import BeautifulSoup as bs
 
 db = sqlite3.connect('/home/ec2-user/sports/sports.db')
+
+x=random.randint(1, 20)
+time.sleep(x)
+
 
 def index():
     print "entered index"
