@@ -1,4 +1,4 @@
-__author__ = 'tanyacashorali'
+	__author__ = 'tanyacashorali'
 
 import random
 import urllib2
@@ -52,6 +52,8 @@ def index():
             #soup = bs(open('testPage2.html'))
             game_date = soup.findAll('div', {'class':'game-time-location'})[0].p.text
             the_date =  re.search(',\s(.*)', game_date).group(1)
+            the_time = re.search('^(.*?),', game_date)
+            game_time = the_time.group(1)
             t=time.strptime(the_date, "%B %d, %Y")
             gdate=time.strftime('%m/%d/%Y', t)
             boxscore = soup.find('table', {'class':'mod-data'})
@@ -93,7 +95,7 @@ def index():
                 cleaned2.pop()
                 try:
                     with db:
-                        db.execute('''INSERT INTO NCAAgames(game_id, team1, team2, game_date) VALUES(?,?,?,?)''', (halftime_ids[i], team1, team2, gdate))
+                        db.execute('''INSERT INTO NCAAgames(game_id, team1, team2, game_date, game_time) VALUES(?,?,?,?,?)''', (halftime_ids[i], team1, team2, gdate, game_time))
                         db.commit()
                     try:
                         date_time = str(datetime.datetime.now())
