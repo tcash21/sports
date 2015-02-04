@@ -1,4 +1,4 @@
-	__author__ = 'tanyacashorali'
+__author__ = 'tanyacashorali'
 
 import random
 import urllib2
