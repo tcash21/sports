@@ -1,5 +1,5 @@
 library(RSQLite)
-library(mailR)
+library(sendmailR)
 
 drv <- dbDriver("SQLite")
 con <- dbConnect(drv, "/home/ec2-user/sports/sports.db")
@@ -79,18 +79,14 @@ all[,5]<-paste0("=\"", all[,5], "\"")
 
 all<-all[order(all$GAME_DATE, decreasing=TRUE),]
 
-write.csv(all, file="testfile.csv", row.names=FALSE)
-
-sender <- "tanyacash@gmail.com" # Replace with a valid address
-recipients <- c("tanyacash@gmail.com", "cmalloy@hbs.edu") # Replace with one or more valid addresses
-email <- send.mail(from = sender,
-to = recipients,
-subject="Weekly NCAA Data",
-body = "Body of the email",
-smtp = list(host.name = "aspmx.l.google.com", port = 25),
-authenticate = FALSE,
-attach.files = c("/home/ec2-user/sports/testfile.csv"),
-send = FALSE)
-email$send() # execute to send email
+write.csv(all, file="/home/ec2-user/sports/testfile.csv", row.names=FALSE)
 
 
+from <- "<tanyacash@gmail.com>"
+to <- "<cmalloy@hbs.edu>"
+subject <- "Welcome!"
+body <- c(
+  "Chris -- see the attached file.",
+  mime_part("/home/ec2-user/sports/testfile.csv", "WeeklyData.csv")
+)
+sendmail(from, to, subject, body)
