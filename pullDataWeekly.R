@@ -81,12 +81,13 @@ all<-all[order(all$GAME_DATE, decreasing=TRUE),]
 
 write.csv(all, file="/home/ec2-user/sports/testfile.csv", row.names=FALSE)
 
+sendmailV <- Vectorize( sendmail , vectorize.args = "to" )
+emails <- c( "<tanyacash@gmail.com>" , "<malloyc@yahoo.com>" )
 
 from <- "<tanyacash@gmail.com>"
-to <- "<cmalloy@hbs.edu>"
-subject <- "Welcome!"
+subject <- "Weekly NCAA Data Report"
 body <- c(
   "Chris -- see the attached file.",
   mime_part("/home/ec2-user/sports/testfile.csv", "WeeklyData.csv")
 )
-sendmail(from, to, subject, body)
+sendmailV(from, to=emails, subject, body)
