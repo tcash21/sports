@@ -82,10 +82,10 @@ all<-all[order(all$GAME_DATE, decreasing=TRUE),]
 write.csv(all, file="testfile.csv", row.names=FALSE)
 
 sender <- "tanyacash@gmail.com" # Replace with a valid address
-recipients <- c("tanyacash@gmail.com") # Replace with one or more valid addresses
+recipients <- c("tanyacash@gmail.com", "cmalloy@hbs.edu") # Replace with one or more valid addresses
 email <- send.mail(from = sender,
 to = recipients,
-subject="Subject of the email",
+subject="Weekly NCAA Data",
 body = "Body of the email",
 smtp = list(host.name = "aspmx.l.google.com", port = 25),
 authenticate = FALSE,
