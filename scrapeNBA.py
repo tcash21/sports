@@ -29,7 +29,7 @@ def index():
     soup = bs(url.read(), ['fast', 'lxml'])
     #soup = bs(open('testPage1.html'))
     game_status = soup.findAll('p', id=re.compile('\d+-statusLine'))
-    links = soup.findAll('a', href=re.compile('/ncb/boxscore.*'))
+    links = soup.findAll('a', href=re.compile('/nba/boxscore.*'))
     urls = [link.get('href') for link in links]
     matches=[re.search('gameId=(\d+)', u) for u in urls]
     ids = [m.group(1) for m in matches]
@@ -41,7 +41,7 @@ def index():
     for game in game_status:
         if (re.search(ht, game.text) and re.search("(\d+)", game["id"]).group() not in halftime_ids):
             halftime_ids.append(re.search("(\d+)", game["id"]).group())
-    league = 'ncb'
+    league = 'nba'
     if(len(halftime_ids) == 0):
         print "No Halftime Box Scores yet."
     else:
