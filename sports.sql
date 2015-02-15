@@ -98,3 +98,30 @@ CREATE TABLE NCAAteamlookup(
 	espn_abbr CHAR(5),
 	PRIMARY KEY (covers_team)
 );
+
+
+CREATE TABLE NBAstats(
+    game_id INT NOT NULL,
+    team CHAR(5) NOT NULL,
+    fgma TEXT NOT NULL,
+    tpma TEXT NOT NULL,
+    ftma TEXT NOT NULL,
+    oreb INT NOT NULL,
+    dreb INT NOT NULL,
+    reb INT NOT NULL,
+    ast NUMERIC NOT NULL,
+    stl INT NOT NULL,
+    blk INT NOT NULL,
+    turnovers INT NOT NULL,
+    pf INT NOT NULL,
+    pts INT NOT NULL
+);
+
+CREATE TABLE NBAgames(
+        game_id INT PRIMARY KEY NOT NULL,
+        team1 CHAR(5) NOT NULL,
+        team2 CHAR(5) NOT NULL,
+        game_date TEXT NOT NULL
+);
+
+
