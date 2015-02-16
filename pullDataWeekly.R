@@ -19,12 +19,12 @@ for (i in seq(along=tables)) {
   cat(tables[[i]], "\n")
 }
 
-halflines <- lDataFrames[[1]]
-games <- lDataFrames[[2]]
-lines <- lDataFrames[[3]]
-teamstats <- lDataFrames[[4]]
-boxscores <- lDataFrames[[5]]
-lookup <- lDataFrames[[6]]
+halflines <- lDataFrames[[3]]
+games <- lDataFrames[[4]]
+lines <- lDataFrames[[5]]
+teamstats <- lDataFrames[[6]]
+boxscores <- lDataFrames[[7]]
+lookup <- lDataFrames[[8]]
 
 m1<-merge(boxscores, games, by="game_id")
 m1$key <- paste(m1$team, m1$game_date)
@@ -83,6 +83,7 @@ write.csv(all, file="/home/ec2-user/sports/testfile.csv", row.names=FALSE)
 
 sendmailV <- Vectorize( sendmail , vectorize.args = "to" )
 emails <- c( "<tanyacash@gmail.com>" , "<malloyc@yahoo.com>" )
+#emails <- c("<tanyacash@gmail.com>")
 
 from <- "<tanyacash@gmail.com>"
 subject <- "Weekly NCAA Data Report"
