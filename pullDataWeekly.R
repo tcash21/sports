@@ -19,12 +19,12 @@ for (i in seq(along=tables)) {
   cat(tables[[i]], "\n")
 }
 
-halflines <- lDataFrames[[3]]
-games <- lDataFrames[[4]]
-lines <- lDataFrames[[5]]
-teamstats <- lDataFrames[[6]]
-boxscores <- lDataFrames[[7]]
-lookup <- lDataFrames[[8]]
+halflines <- lDataFrames[[5]]
+games <- lDataFrames[[6]]
+lines <- lDataFrames[[7]]
+teamstats <- lDataFrames[[8]]
+boxscores <- lDataFrames[[9]]
+lookup <- lDataFrames[[10]]
 
 m1<-merge(boxscores, games, by="game_id")
 m1$key <- paste(m1$team, m1$game_date)
