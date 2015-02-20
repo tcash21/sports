@@ -101,7 +101,8 @@ CREATE TABLE NBAstats(
     blk INT NOT NULL,
     turnovers INT NOT NULL,
     pf INT NOT NULL,
-    pts INT NOT NULL
+    pts INT NOT NULL,
+    timestamp TEXT NOT NULL
 );
 CREATE TABLE NBAgames(
         game_id INT PRIMARY KEY NOT NULL,
