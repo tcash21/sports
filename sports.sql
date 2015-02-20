@@ -107,7 +107,8 @@ CREATE TABLE NBAgames(
         game_id INT PRIMARY KEY NOT NULL,
         team1 CHAR(5) NOT NULL,
         team2 CHAR(5) NOT NULL,
-        game_date TEXT NOT NULL
+        game_date TEXT NOT NULL,
+        game_time TEXT NOT NULL
 );
 CREATE TABLE NCAAfinalstats(
     game_id INT NOT NULL,
