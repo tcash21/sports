@@ -11,15 +11,15 @@ lDataFrames <- vector("list", length=length(tables))
 ## create a data.frame for each table
 for (i in seq(along=tables)) {
   if(tables[[i]] == 'NCAAHalflines' | tables[[i]] == 'NCAAlines'){
-  lDataFrames[[i]] <- dbGetQuery(conn=con, statement=paste("SELECT away_team, home_team, game_date, line, spread, max(game_time) as game_time from ", tables[[i]], " 
-	group by away_team, home_team, game_date;"))
+  lDataFrames[[i]] <- dbGetQuery(conn=con, statement=paste("SELECT away_team, home_team, game_date, line, spread, max(game_time) as 
+game_time from ", tables[[i]], " group by away_team, home_team, game_date;"))
   } else {
   	lDataFrames[[i]] <- dbGetQuery(conn=con, statement=paste("SELECT * FROM '", tables[[i]], "'", sep=""))
   }
   cat(tables[[i]], "\n")
 }
 
-halflines <- lDataFrames[[5]]
+halflines <- lDataFrames[[4]]
 games <- lDataFrames[[6]]
 lines <- lDataFrames[[7]]
 teamstats <- lDataFrames[[8]]
