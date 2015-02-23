@@ -25,6 +25,7 @@ lines <- lDataFrames[[7]]
 teamstats <- lDataFrames[[8]]
 boxscores <- lDataFrames[[9]]
 lookup <- lDataFrames[[10]]
+ncaafinal <- lDataFrames[[5]]
 
 m1<-merge(boxscores, games, by="game_id")
 m1$key <- paste(m1$team, m1$game_date)
@@ -60,6 +61,16 @@ l2<-merge(m3h, m3h2, by=c("game_date.y", "home_team"))
 l2<-l2[match(m3h$key, l2$key.y),]
 m3h<-cbind(m3h, l2[,88:90])
 
+ncaafinal$key <- paste(ncaafinal$game_id, ncaafinal$team)
+n<-apply(ncaafinal[,3:5], 2, function(x) strsplit(x, "-"))
+ncaafinal$fgm <- do.call("rbind",n$fgma)[,1]
+ncaafinal$fga <- do.call("rbind",n$fgma)[,2]
+ncaafinal$tpm <- do.call("rbind",n$tpma)[,1]
+ncaafinal$tpa <- do.call("rbind",n$tpma)[,2]
+ncaafinal$ftm <- do.call("rbind",n$ftma)[,1]
+ncaafinal$fta <- do.call("rbind",n$ftma)[,2]
+ncaafinal <- ncaafinal[,c(1,2,17:22,6:16)]
+
 colnames(m3h)[41:42] <- c("home_team.x", "home_team.y")
 colnames(m3a)[38] <- "home_team"
 all <- rbind(m3a, m3h)
@@ -67,19 +78,27 @@ all <- all[,-1]
 all$key <- paste(all$game_id, all$team.y)
 all<-all[match(unique(all$key), all$key),]
 
-colnames(all) <- c("GAME_ID","TEAM","FGM-A","3PM-A","FTM-A","OREB","DREB","REB","AST","STL","BLK","TO","PF","PTS","BOXSCORE_TIMESTAMP", "TEAM1","TEAM2","GAME_DATE",
-"GAME_TIME","REMOVE2","REMOVE3","MIN", "SEASON_FGM","SEASON_FGA","SEASON_FTM","SEASON_FTA","SEASON_3PM","SEASON_3PA","SEASON_PTS","SEASON_OFFR","SEASON_DEFR","SEASON_REB",
-"SEASON_AST","SEASON_TO","SEASON_STL", "SEASON_BLK","REMOVE4","REMOVE5","REMOVE6","REMOVE7","REMOVE8","REMOVE9","LINE", "SPREAD", "COVERS_UPDATE","LINE_HALF", 
-"SPREAD_HALF", "COVERS_HALF_UPDATE", "REMOVE11")
-all <- all[,-grep("REMOVE", colnames(all))]
+final<-merge(ncaafinal, all, by="key")
+final <- final[,-1]
 
-all[,3]<-paste0("=\"", all[,3], "\"")
-all[,4]<-paste0("=\"", all[,4], "\"")
-all[,5]<-paste0("=\"", all[,5], "\"")
+colnames(final) <- c("GAME_ID","TEAM","FINAL_FGM","FINAL_FGA", "FINAL_3PM","FINAL_3PA","FINAL_FTM","FINAL_FTA","FINAL_OREB","FINAL_DREB","FINAL_REB",
+"FINAL_AST","FINAL_STL","FINAL_BLK","FINAL_TO","FINAL_PF","FINAL_PTS","FINAL_BOXSCORE_TIMESTAMP", "REMOVE0","REMOVE1","HALF_FGMA", "HALF_3PMA", "HALF_FTMA",
+"HALF_OREB", "HALF_DREB", "HALF_REB", "HALF_AST", "HALF_STL", "HALF_BLK", "HALF_TO", "HALF_PF", "HALF_PTS","HALF_TIMESTAMP", "TEAM1", "TEAM2", "GAME_DATE",
+"GAME_TIME","REMOVE2","REMOVE3","MIN", "SEASON_FGM","SEASON_FGA","SEASON_FTM","SEASON_FTA","SEASON_3PM","SEASON_3PA","SEASON_PTS","SEASON_OFFR",
+"SEASON_DEFR","SEASON_REB","SEASON_AST","SEASON_TO","SEASON_STL", "SEASON_BLK","REMOVE4","REMOVE5","REMOVE6","REMOVE7","REMOVE8","REMOVE9",
+"LINE", "SPREAD", "COVERS_UPDATE","LINE_HALF", "SPREAD_HALF", "COVERS_HALF_UPDATE")
+final <- final[,-grep("REMOVE", colnames(final))]
 
-all<-all[order(all$GAME_DATE, decreasing=TRUE),]
 
-write.csv(all, file="/home/ec2-user/sports/testfile.csv", row.names=FALSE)
+
+
+#all[,3]<-paste0("=\"", all[,3], "\"")
+#all[,4]<-paste0("=\"", all[,4], "\"")
+#all[,5]<-paste0("=\"", all[,5], "\"")
+
+final<-final[order(final$GAME_DATE, decreasing=TRUE),]
+
+write.csv(final, file="/home/ec2-user/sports/testfile.csv", row.names=FALSE)
 
 sendmailV <- Vectorize( sendmail , vectorize.args = "to" )
 emails <- c( "<tanyacash@gmail.com>" , "<malloyc@yahoo.com>" )
