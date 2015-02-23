@@ -27,6 +27,15 @@ boxscores <- lDataFrames[[9]]
 lookup <- lDataFrames[[10]]
 ncaafinal <- lDataFrames[[5]]
 
+b<-apply(boxscores[,3:5], 2, function(x) strsplit(x, "-"))
+boxscores$fgm <- do.call("rbind",b$fgma)[,1]
+boxscores$fga <- do.call("rbind",b$fgma)[,2]
+boxscores$tpm <- do.call("rbind",b$tpma)[,1]
+boxscores$tpa <- do.call("rbind",b$tpma)[,2]
+boxscores$ftm <- do.call("rbind",b$ftma)[,1]
+boxscores$fta <- do.call("rbind",b$ftma)[,2]
+boxscores <- boxscores[,c(1,2,16:21,6:15)]
+
 m1<-merge(boxscores, games, by="game_id")
 m1$key <- paste(m1$team, m1$game_date)
 teamstats$key <- paste(teamstats$team, teamstats$the_date)
@@ -41,8 +50,8 @@ la$key <- paste(la$espn_abbr, la$game_date)
 lh$key <- paste(lh$espn_abbr, lh$game_date)
 m3a<-merge(m2, la, by="key")
 m3h<-merge(m2, lh, by="key")
-colnames(m3a)[46] <- "CoversTotalLineUpdateTime"
-colnames(m3h)[46] <- "CoversTotalLineUpdateTime"
+colnames(m3a)[49] <- "CoversTotalLineUpdateTime"
+colnames(m3h)[49] <- "CoversTotalLineUpdateTime"
 
 ## Halftime Lines
 la2<-merge(lookup, halflines, by="away_team")
@@ -51,15 +60,15 @@ la2$key <- paste(la2$espn_abbr, la2$game_date)
 lh2$key <- paste(lh2$espn_abbr, lh2$game_date)
 m3a2<-merge(m2, la2, by="key")
 m3h2<-merge(m2, lh2, by="key")
-colnames(m3a2)[46] <- "CoversHalfLineUpdateTime"
-colnames(m3h2)[46] <- "CoversHalfLineUpdateTime"
+colnames(m3a2)[49] <- "CoversHalfLineUpdateTime"
+colnames(m3h2)[49] <- "CoversHalfLineUpdateTime"
 
 l<-merge(m3a, m3a2, by=c("game_date.y", "away_team"))
 l<-l[match(m3a$key, l$key.y),]
-m3a<-cbind(m3a, l[,88:90])
+m3a<-cbind(m3a, l[,94:96])
 l2<-merge(m3h, m3h2, by=c("game_date.y", "home_team"))
 l2<-l2[match(m3h$key, l2$key.y),]
-m3h<-cbind(m3h, l2[,88:90])
+m3h<-cbind(m3h, l2[,94:96])
 
 ncaafinal$key <- paste(ncaafinal$game_id, ncaafinal$team)
 n<-apply(ncaafinal[,3:5], 2, function(x) strsplit(x, "-"))
@@ -71,8 +80,8 @@ ncaafinal$ftm <- do.call("rbind",n$ftma)[,1]
 ncaafinal$fta <- do.call("rbind",n$ftma)[,2]
 ncaafinal <- ncaafinal[,c(1,2,17:22,6:16)]
 
-colnames(m3h)[41:42] <- c("home_team.x", "home_team.y")
-colnames(m3a)[38] <- "home_team"
+colnames(m3h)[44:45] <- c("home_team.x", "home_team.y")
+colnames(m3a)[41] <- "home_team"
 all <- rbind(m3a, m3h)
 all <- all[,-1]
 all$key <- paste(all$game_id, all$team.y)
@@ -82,19 +91,12 @@ final<-merge(ncaafinal, all, by="key")
 final <- final[,-1]
 
 colnames(final) <- c("GAME_ID","TEAM","FINAL_FGM","FINAL_FGA", "FINAL_3PM","FINAL_3PA","FINAL_FTM","FINAL_FTA","FINAL_OREB","FINAL_DREB","FINAL_REB",
-"FINAL_AST","FINAL_STL","FINAL_BLK","FINAL_TO","FINAL_PF","FINAL_PTS","FINAL_BOXSCORE_TIMESTAMP", "REMOVE0","REMOVE1","HALF_FGMA", "HALF_3PMA", "HALF_FTMA",
-"HALF_OREB", "HALF_DREB", "HALF_REB", "HALF_AST", "HALF_STL", "HALF_BLK", "HALF_TO", "HALF_PF", "HALF_PTS","HALF_TIMESTAMP", "TEAM1", "TEAM2", "GAME_DATE",
-"GAME_TIME","REMOVE2","REMOVE3","MIN", "SEASON_FGM","SEASON_FGA","SEASON_FTM","SEASON_FTA","SEASON_3PM","SEASON_3PA","SEASON_PTS","SEASON_OFFR",
-"SEASON_DEFR","SEASON_REB","SEASON_AST","SEASON_TO","SEASON_STL", "SEASON_BLK","REMOVE4","REMOVE5","REMOVE6","REMOVE7","REMOVE8","REMOVE9",
-"LINE", "SPREAD", "COVERS_UPDATE","LINE_HALF", "SPREAD_HALF", "COVERS_HALF_UPDATE")
+"FINAL_AST","FINAL_STL","FINAL_BLK","FINAL_TO","FINAL_PF","FINAL_PTS","FINAL_BOXSCORE_TIMESTAMP", "REMOVE0","REMOVE1","HALF_FGM", "HALF_FGA", "HALF_3PM", 
+"HALF_3PA", "HALF_FTM","HALF_FTA","HALF_OREB", "HALF_DREB", "HALF_REB", "HALF_AST", "HALF_STL", "HALF_BLK", "HALF_TO", "HALF_PF", "HALF_PTS",
+"HALF_TIMESTAMP", "TEAM1", "TEAM2", "GAME_DATE","GAME_TIME","REMOVE2","REMOVE3","MIN", "SEASON_FGM","SEASON_FGA","SEASON_FTM","SEASON_FTA","SEASON_3PM",
+"SEASON_3PA","SEASON_PTS","SEASON_OFFR","SEASON_DEFR","SEASON_REB","SEASON_AST","SEASON_TO","SEASON_STL", "SEASON_BLK","REMOVE4","REMOVE5","REMOVE6",
+"REMOVE7","REMOVE8","REMOVE9","LINE", "SPREAD", "COVERS_UPDATE","LINE_HALF", "SPREAD_HALF", "COVERS_HALF_UPDATE")
 final <- final[,-grep("REMOVE", colnames(final))]
-
-
-
-
-#all[,3]<-paste0("=\"", all[,3], "\"")
-#all[,4]<-paste0("=\"", all[,4], "\"")
-#all[,5]<-paste0("=\"", all[,5], "\"")
 
 final<-final[order(final$GAME_DATE, decreasing=TRUE),]
 
