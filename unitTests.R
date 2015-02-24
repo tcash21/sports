@@ -5,6 +5,7 @@ library(sendmailR)
 test <- read.csv("/home/ec2-user/sports/testfile.csv")
 df <- data.frame(table(test$game_id))
 if(dim(df)[1] > 0){
+ if(length(which(df$Freq == 1)) == 1){
  sendmailV <- Vectorize( sendmail , vectorize.args = "to" )
  #emails <- c( "<tanyacash@gmail.com>" , "<malloyc@yahoo.com>" )
  emails <- c("<tanyacash@gmail.com>")
@@ -17,4 +18,4 @@ if(dim(df)[1] > 0){
  )
  sendmailV(from, to=emails, subject, body)
 }
-
+}
