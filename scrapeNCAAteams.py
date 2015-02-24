@@ -45,6 +45,10 @@ def index():
         teams = soup.findAll('td', {'class':'team'})
         team1 = teams[0].strong.text
         team2 = teams[1].strong.text
+        if team1 == 'TAM':
+            team1 = 'TA&M'
+        if team2 == 'TAM':
+            team2 = 'TA&M'
         team1_id = re.search('id/(\d+)/', teams[0].a['href']).group(1)
         team2_id = re.search('id/(\d+)/', teams[1].a['href']).group(1)
         team1_url = urllib2.urlopen('http://espn.go.com/mens-college-basketball/team/stats/_/id/' + team1_id)
