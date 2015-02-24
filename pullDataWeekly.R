@@ -103,8 +103,8 @@ final<-final[order(final$GAME_DATE, decreasing=TRUE),]
 write.csv(final, file="/home/ec2-user/sports/testfile.csv", row.names=FALSE)
 
 sendmailV <- Vectorize( sendmail , vectorize.args = "to" )
-#emails <- c( "<tanyacash@gmail.com>" , "<malloyc@yahoo.com>" )
-emails <- c("<tanyacash@gmail.com>")
+emails <- c( "<tanyacash@gmail.com>" , "<malloyc@yahoo.com>" )
+#emails <- c("<tanyacash@gmail.com>")
 
 from <- "<tanyacash@gmail.com>"
 subject <- "Weekly NCAA Data Report"

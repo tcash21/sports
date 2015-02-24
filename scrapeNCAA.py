@@ -77,6 +77,10 @@ def index():
                 linescore = soup.find('table', {'class':'linescore'})
                 team1 = linescore.findAll('a')[0].text
                 team2 = linescore.findAll('a')[1].text
+                if team1 == 'WM':
+                    team1 = 'W&M'
+                if team2 == 'WM':
+                    team2 = 'W&M'
                 if team1 == 'TAM':
                     team1 = 'TA&M'
                 if team2 == 'TAM':

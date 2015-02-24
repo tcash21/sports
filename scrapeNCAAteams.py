@@ -45,6 +45,10 @@ def index():
         teams = soup.findAll('td', {'class':'team'})
         team1 = teams[0].strong.text
         team2 = teams[1].strong.text
+        if team1 == 'WM':
+            team1 = 'W&M'
+        if team2 == 'WM':
+            team2 = 'W&M'
         if team1 == 'TAM':
             team1 = 'TA&M'
         if team2 == 'TAM':
