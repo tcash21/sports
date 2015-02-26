@@ -36,6 +36,8 @@ def index():
     link_strings = [j for k, j in enumerate(link_strings) if k not in remove_indices]
     ## freeze updates at the half
     for i in range(0, len(link_strings)):
+        x=random.randint(1, 10)
+        time.sleep(x)
         print str(i) + ' out of ' + str(len(link_strings)) + ' teams.'
         espn = 'http://espn.go.com' + link_strings[i]
         print espn
@@ -59,8 +61,15 @@ def index():
         soup1 = bs(team1_url.read(), ['fast', 'lxml'])
         ## e.g. no season stats for http://espn.go.com/mens-college-basketball/team/stats/_/id/2395
         try:
-            totals = soup1.find_all('tr', {'class':'total'})[1]
-            data = totals.findAll('td')
+            totals0 = soup1.find_all('tr', {'class':'total'})[0]
+            data0 = totals0.findAll('td')
+            values0 = [d.text for d in data0]
+            cols0 = soup1.findAll('tr', {'class':'colhead'})[0]
+            colnames0 = cols0.findAll('a')
+            colnames0 = [c.text for c in colnames0]
+
+            totals1 = soup1.find_all('tr', {'class':'total'})[1]
+            data = totals1.findAll('td')
             values = [d.text for d in data]
             cols = soup1.findAll('tr', {'class':'colhead'})[1]
             colnames = cols.findAll('a')
@@ -70,13 +79,26 @@ def index():
                     db.execute('''INSERT INTO NCAAseasonstats(team, the_date, min, fgm, fga, ftm, fta, tpm, tpa, pts, offr, defr, reb, ast, turnovers, stl, blk) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)''', (team1, time.strftime("%m/%d/%Y"),values[1],int(values[2]),int(values[3]),int(values[4]),int(values[5]),int(values[6]),int(values[7]),int(values[8]),int(values[9]),int(values[10]),int(values[11]),int(values[12]),int(values[13]),int(values[14]),int(values[15])))
                     db.commit()
             except sqlite3.IntegrityError:
-                print 'Record Exists'
+                print 'Team1 Season Stats Record Exists'
+            try:
+                with db:
+                    db.execute('''INSERT INTO NCAAseasontotals(team, the_date, gp, min, ppg, rpg, apg, spg, bpg, tpg, fgp, ftp, tpp) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)''', (team1, time.strftime("%m/%d/%Y"), int(values0[1]), values0[2], int(values0[3]), int(values0[4]), int(values0[5]), int(values0[6]), int(values0[7]), int(values0[8]), float(values0[9]), float(values0[10]), float(values0[11])))
+                    db.commit()
+            except sqlite3.IntegrityError:
+                print 'Team1 Season Totals Record Exists'   
         except:
             print 'No stats for team'
 
         team2_url = urllib2.urlopen('http://espn.go.com/mens-college-basketball/team/stats/_/id/' + team2_id)
         soup2 = bs(team2_url.read(), ['fast', 'lxml'])
         try:
+            totals0 = soup2.find_all('tr', {'class':'total'})[0]
+            data0 = totals0.findAll('td')
+            values0 = [d.text for d in data0]
+            cols0 = soup1.findAll('tr', {'class':'colhead'})[0]
+            colnames0 = cols0.findAll('a')
+            colnames0 = [c.text for c in colnames0]
+
             totals = soup2.find_all('tr', {'class':'total'})[1]
             data = totals.findAll('td')
             values = [d.text for d in data]
@@ -88,7 +110,14 @@ def index():
                     db.execute('''INSERT INTO NCAAseasonstats(team, the_date, min, fgm, fga, ftm, fta, tpm, tpa, pts, offr, defr, reb, ast, turnovers, stl, blk) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)''', (team2, time.strftime("%m/%d/%Y"),values[1],int(values[2]),int(values[3]),int(values[4]),int(values[5]),int(values[6]),int(values[7]),int(values[8]),int(values[9]),int(values[10]),int(values[11]),int(values[12]),int(values[13]),int(values[14]),int(values[15])))
                     db.commit()
             except sqlite3.IntegrityError:
-                print 'Record Exists'
+                print 'Team2 Season Stats Record Exists'
+            try:
+                with db:
+                    db.execute('''INSERT INTO NCAAseasontotals(team, the_date, gp, min, ppg, rpg, apg, spg, bpg, tpg, fgp, ftp, tpp) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)''', (team2, time.strftime("%m/%d/%Y"), int(values0[1]), values0[2], int(values0[3]), int(values0[4]), int(values0[5]), int(values0[6]), int(values0[7]), int(values0[8]), float(values0[9]),float(values0[10]),float(values0[11])))
+                    db.commit()
+            except sqlite3.IntegrityError:
+                print 'Team2 Season Totals Record Exists'
+          
         except:
             print 'No stats for team'
 

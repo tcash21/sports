@@ -23,9 +23,10 @@ halflines <- lDataFrames[[4]]
 games <- lDataFrames[[6]]
 lines <- lDataFrames[[7]]
 teamstats <- lDataFrames[[8]]
-boxscores <- lDataFrames[[9]]
-lookup <- lDataFrames[[10]]
+boxscores <- lDataFrames[[10]]
+lookup <- lDataFrames[[11]]
 ncaafinal <- lDataFrames[[5]]
+seasontotals <- lDataFrames[[9]]
 
 b<-apply(boxscores[,3:5], 2, function(x) strsplit(x, "-"))
 boxscores$fgm <- do.call("rbind",b$fgma)[,1]
@@ -98,6 +99,15 @@ colnames(final) <- c("GAME_ID","TEAM","FINAL_FGM","FINAL_FGA", "FINAL_3PM","FINA
 "REMOVE7","REMOVE8","REMOVE9","LINE", "SPREAD", "COVERS_UPDATE","LINE_HALF", "SPREAD_HALF", "COVERS_HALF_UPDATE")
 final <- final[,-grep("REMOVE", colnames(final))]
 
+## Add the season total stats
+colnames(seasontotals)[1] <- "TEAM"
+colnames(seasontotals)[2] <- "GAME_DATE"
+#today <- format(Sys.Date(), "%m/%d/%Y")
+#seasontotals <- subset(seasontotals, GAME_DATE == today)
+x<-merge(seasontotals, final, by=c("TEAM", "GAME_DATE"))
+final<-x[,c(14:51, 3,5:13, 52:70)]
+colnames(final)[39:48] <- c("SEASON_GP", "SEASON_PPG", "SEASON_RPG", "SEASON_APG", "SEASON_SPG", "SEASON_BPG", "SEASON_TPG", "SEASON_FGP", "SEASON_FTP", "SEASON_3PP")
+final$GAME_DATE <- seasontotals$GAME_DATE[1]
 final<-final[order(final$GAME_DATE, decreasing=TRUE),]
 
 write.csv(final, file="/home/ec2-user/sports/testfile.csv", row.names=FALSE)
@@ -113,3 +123,4 @@ body <- c(
   mime_part("/home/ec2-user/sports/testfile.csv", "WeeklyData.csv")
 )
 sendmailV(from, to=emails, subject, body)
+
