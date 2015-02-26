@@ -1,0 +1,33 @@
+#newline at the end of this file is extremely important.  Cron won't run without it.
+#*/5 0,1,12,13,14,15,16,17,18,19,20,21,22,23 * * 1,2,3,4,5,6 python /home/ec2-user/sports/scrape.py > /home/ec2-user/logNCF_$(date -u +\%Y\%m\%dt\%H\%M\%S).txt
+
+#newline at the end of this file is extremely important.  Cron won't run without it.
+*/4 0,1,2,12,13,14,15,16,17,18,19,20,21,22,23 * * 1,2,3,4,5,6,7 python /home/ec2-user/sports/scrapeNCAA.py > /home/ec2-user/log_$(date -u +\%Y\%m\%dt\%H\%M\%S).txt
+
+#ncaa season stats scrape at 2am daily
+0 2 * * * python /home/ec2-user/sports/scrapeNCAAteams.py > /home/ec2-user/logNCAAseason_$(date -u +\%Y\%m\%dt\%H\%M\%S).txt
+
+# backup sqlite db every hour Monday-Saturday to S3
+# 0 * * * 1,2,3,4,5,6 sh /home/ec2-user/sports/backup_sqlite3db.sh > /home/ec2-user/backup_$(date -u +\%Y\%m\%dt\%H\%M\%S).txt
+
+#newline at the end of this file is extremely important.  Cron won't run without it.
+*/6 0,1,2,12,13,14,15,16,17,18,19,20,21,22,23 * * 1,2,3,4,5,6,7 python /home/ec2-user/sports/scrapeLines.py > /home/ec2-user/lines_$(date -u +\%Y\%m\%dt\%H\%M\%S).txt
+
+#newline at the end of this file is extremely important.  Cron won't run without it.
+*/5 0,1,2,12,13,14,15,16,17,18,19,20,21,22,23 * * 1,2,3,4,5,6,7 python /home/ec2-user/sports/scrapeHalfLines.py > /home/ec2-user/half_lines_$(date -u +\%Y\%m\%dt\%H\%M\%S).txt
+
+# send weekly report
+0 8 * * 1 R CMD BATCH /home/ec2-user/sports/pullDataWeekly.R >/dev/null 2>&1
+
+# run unit tests
+10 8 * * 1 R CMD BATCH /home/ec2-user/sports/unitTests.R > /dev/null 2>&1
+
+#newline at the end of this file is extremely important.  Cron won't run without it.
+*/5 0,1,2,12,13,14,15,16,17,18,19,20,21,22,23 * * 1,2,3,4,5,6,7 python /home/ec2-user/sports/scrapeNBA.py > /home/ec2-user/logNBA_$(date -u +\%Y\%m\%dt\%H\%M\%S).txt
+
+# scrape final NCAA box scores daily at 3am
+0 3 * * * python /home/ec2-user/sports/scrapeNCAAfinal.py > /home/ec2-user/final_NCAAscores_$(date -u +\%Y\%m\%dt\%H\%M\%S).txt
+
+# scrape final NBA box scores daily at 4am
+0 4 * * * python /home/ec2-user/sports/scrapeNBAfinal.py > /home/ec2-user/final_NBAscores_$(date -u +\%Y\%m\%dt\%H\%M\%S).txt
+
