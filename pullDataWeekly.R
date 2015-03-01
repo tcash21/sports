@@ -104,16 +104,22 @@ colnames(seasontotals)[1] <- "TEAM"
 colnames(seasontotals)[2] <- "GAME_DATE"
 #today <- format(Sys.Date(), "%m/%d/%Y")
 #seasontotals <- subset(seasontotals, GAME_DATE == today)
-x<-merge(seasontotals, final, by=c("TEAM", "GAME_DATE"))
-final<-x[,c(14:51, 3,5:13, 52:70)]
-colnames(final)[39:48] <- c("SEASON_GP", "SEASON_PPG", "SEASON_RPG", "SEASON_APG", "SEASON_SPG", "SEASON_BPG", "SEASON_TPG", "SEASON_FGP", "SEASON_FTP", "SEASON_3PP")
-final$GAME_DATE <- seasontotals$GAME_DATE[1]
+final$key <- paste(final$GAME_DATE, final$TEAM)
+seasontotals$key <- paste(seasontotals$GAME_DATE, seasontotals$TEAM)
+
+x<-merge(seasontotals, final, by=c("key"))
+x<- x[,c(-1, -16, -51)]
+final<-x[,c(14:51, 1:3,5:13, 52:70)]
+colnames(final)[41:50] <- c("SEASON_GP", "SEASON_PPG", "SEASON_RPG", "SEASON_APG", "SEASON_SPG", "SEASON_BPG", "SEASON_TPG", "SEASON_FGP", 
+"SEASON_FTP", "SEASON_3PP")
+#final$GAME_DATE <- seasontotals$GAME_DATE[1]
+#final$GAME_DATE<-games[match(final$GAME_ID, games$game_id),]$game_date
 final<-final[order(final$GAME_DATE, decreasing=TRUE),]
 
 write.csv(final, file="/home/ec2-user/sports/testfile.csv", row.names=FALSE)
 
 sendmailV <- Vectorize( sendmail , vectorize.args = "to" )
-emails <- c( "<tanyacash@gmail.com>" , "<malloyc@yahoo.com>" )
+emails <- c( "<tanyacash@gmail.com>" , "<malloyc@yahoo.com>", "<sschopen@gmail.com>")
 #emails <- c("<tanyacash@gmail.com>")
 
 from <- "<tanyacash@gmail.com>"
