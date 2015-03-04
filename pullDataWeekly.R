@@ -16,17 +16,17 @@ game_time from ", tables[[i]], " group by away_team, home_team, game_date;"))
   } else {
   	lDataFrames[[i]] <- dbGetQuery(conn=con, statement=paste("SELECT * FROM '", tables[[i]], "'", sep=""))
   }
-  cat(tables[[i]], "\n")
+  cat(tables[[i]], ":", i, "\n")
 }
 
-halflines <- lDataFrames[[4]]
-games <- lDataFrames[[6]]
-lines <- lDataFrames[[7]]
-teamstats <- lDataFrames[[8]]
-boxscores <- lDataFrames[[10]]
-lookup <- lDataFrames[[11]]
-ncaafinal <- lDataFrames[[5]]
-seasontotals <- lDataFrames[[9]]
+halflines <- lDataFrames[[5]]
+games <- lDataFrames[[7]]
+lines <- lDataFrames[[8]]
+teamstats <- lDataFrames[[9]]
+boxscores <- lDataFrames[[11]]
+lookup <- lDataFrames[[12]]
+ncaafinal <- lDataFrames[[6]]
+seasontotals <- lDataFrames[[10]]
 
 b<-apply(boxscores[,3:5], 2, function(x) strsplit(x, "-"))
 boxscores$fgm <- do.call("rbind",b$fgma)[,1]
