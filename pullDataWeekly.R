@@ -19,14 +19,14 @@ game_time from ", tables[[i]], " group by away_team, home_team, game_date;"))
   cat(tables[[i]], ":", i, "\n")
 }
 
-halflines <- lDataFrames[[6]]
-games <- lDataFrames[[8]]
-lines <- lDataFrames[[9]]
-teamstats <- lDataFrames[[10]]
-boxscores <- lDataFrames[[12]]
-lookup <- lDataFrames[[13]]
-ncaafinal <- lDataFrames[[7]]
-seasontotals <- lDataFrames[[11]]
+halflines <- lDataFrames[[9]]
+games <- lDataFrames[[11]]
+lines <- lDataFrames[[12]]
+teamstats <- lDataFrames[[13]]
+boxscores <- lDataFrames[[15]]
+lookup <- lDataFrames[[16]]
+ncaafinal <- lDataFrames[[10]]
+seasontotals <- lDataFrames[[14]]
 
 b<-apply(boxscores[,3:5], 2, function(x) strsplit(x, "-"))
 boxscores$fgm <- do.call("rbind",b$fgma)[,1]
