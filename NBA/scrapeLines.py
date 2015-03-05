@@ -14,6 +14,9 @@ from datetime import date
 
 db = sqlite3.connect('/home/ec2-user/sports/sports.db')
 
+x=random.randint(1, 20)
+time.sleep(x)
+
 url = urllib2.urlopen('http://www.covers.com/odds/basketball/nba-spreads.aspx')
 soup = bs(url.read(), ['fast', 'lxml'])
 tables = soup.findAll('table')

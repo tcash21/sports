@@ -36,7 +36,7 @@ def index():
     link_strings = [j for k, j in enumerate(link_strings) if k not in remove_indices]
     ## freeze updates at the half
     for i in range(0, len(link_strings)):
-        x=random.randint(1, 10)
+        x=random.randint(5, 15)
         time.sleep(x)
         print str(i) + ' out of ' + str(len(link_strings)) + ' teams.'
         espn = 'http://espn.go.com' + link_strings[i]

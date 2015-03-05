@@ -46,6 +46,8 @@ def index():
         print "No Halftime Box Scores yet."
     else:
         for i in range(0, len(halftime_ids)):
+            x=random.randint(5, 10)
+            time.sleep(x)
             espn = 'http://scores.espn.go.com/' + league + '/boxscore?gameId=' + halftime_ids[i]
             url = urllib2.urlopen(espn)
             soup = bs(url.read(), ['fast', 'lxml'])
