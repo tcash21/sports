@@ -27,7 +27,7 @@ covers = lines.findAll('td', {'class':'covers_top'})
 #today = date.today()
 #today = today.strftime("%m/%d/%Y")
 today = str(datetime.datetime.now() - timedelta(hours=2))[0:10]
-
+today = strftime("%m/%d/%Y", strptime(today, '%Y-%m-%d'))
 
 lines = []
 spreads = []
