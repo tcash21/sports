@@ -25,6 +25,7 @@ def index():
     times = []
     final_ids = []
     today = date.today() - timedelta(days=1)
+#    today = date.today()
     today = today.strftime("%Y%m%d")
     url = urllib2.urlopen('http://scores.espn.go.com/ncb/scoreboard?date=' + today + '&confId=50')
     soup = bs(url.read(), ['fast', 'lxml'])

@@ -1,5 +1,6 @@
 library(RSQLite)
 library(sendmailR)
+library(plyr)
 
 drv <- dbDriver("SQLite")
 con <- dbConnect(drv, "/home/ec2-user/sports/sports.db")
@@ -116,6 +117,37 @@ colnames(final)[41:50] <- c("SEASON_GP", "SEASON_PPG", "SEASON_RPG", "SEASON_APG
 #final$GAME_DATE<-games[match(final$GAME_ID, games$game_id),]$game_date
 final<-final[order(final$GAME_DATE, decreasing=TRUE),]
 
+write.csv(final, file="/home/ec2-user/sports/alldata.csv", row.names=FALSE)
+
+final <- subset(final, LINE_HALF != "OFF")
+final$LINE_HALF <- as.numeric(final$LINE_HALF)
+final$LINE <- as.numeric(final$LINE)
+final<-ddply(final, .(GAME_ID), transform, mwt=HALF_PTS + HALF_PTS[1] + LINE_HALF - LINE)
+final <- ddply(final, .(GAME_ID), transform, half_diff=HALF_PTS - HALF_PTS[1])
+
+## transform to numerics
+final[,2:16]<-apply(final[,2:16], 2, as.numeric)
+final[,18:32]<-apply(final[,18:32], 2, as.numeric)
+final[,c(38,41:63)]<-apply(final[,c(38,41:63)], 2, as.numeric)
+
+
+## Team1 and Team2 Halftime Differentials
+final$fg_percent <- ((final$HALF_FGM / final$HALF_FGA) - (final$SEASON_FGM / final$SEASON_FGA - 0.01))
+final$fg_percent_noadjustment <- (final$HALF_FGM / final$HALF_FGA) - (final$SEASON_FGM / final$SEASON_FGA)
+final$FGM <- (final$HALF_FGM - (final$SEASON_FGM / final$SEASON_GP / 2))
+final$TPM <- (final$HALF_3PM - (final$SEASON_3PM / final$SEASON_GP / 2))
+final$FTM <- (final$HALF_FTM - (final$SEASON_FTM / final$SEASON_GP / 2 - 1))
+final$TO <- (final$HALF_TO - (final$SEASON_TO / final$SEASON_GP / 2))
+final$OREB <- (final$HALF_OREB - (final$SEASON_OFFR / final$SEASON_GP / 2))
+
+## Cumulative Halftime Differentials
+final$chd_fg <- ddply(final, .(GAME_ID), transform, chd_fg = (fg_percent + fg_percent[1]) / 2)$chd_fg
+final$chd_fgm <- ddply(final, .(GAME_ID), transform, chd_fgm = (FGM + FGM[1]) / 2)$chd_fgm
+final$chd_tpm <- ddply(final, .(GAME_ID), transform, chd_tpm = (TPM + TPM[1]) / 2)$chd_tpm
+final$chd_ftm <- ddply(final, .(GAME_ID), transform, chd_ftm = (FTM + FTM[1]) / 2)$chd_ftm
+final$chd_to <- ddply(final, .(GAME_ID), transform, chd_to = (TO + TO[1]) / 2)$chd_to
+final$chd_oreb <- ddply(final, .(GAME_ID), transform, chd_oreb = (OREB + OREB[1]) / 2)$chd_oreb
+
 write.csv(final, file="/home/ec2-user/sports/testfile.csv", row.names=FALSE)
 
 sendmailV <- Vectorize( sendmail , vectorize.args = "to" )
@@ -123,7 +155,7 @@ emails <- c( "<tanyacash@gmail.com>" , "<malloyc@yahoo.com>", "<sschopen@gmail.c
 #emails <- c("<tanyacash@gmail.com>")
 
 from <- "<tanyacash@gmail.com>"
-subject <- "Weekly NCAA Data Report"
+subject <- "Weekly NCAA Data Report - GAMES WITH HALF_LINES ONLY"
 body <- c(
   "Chris -- see the attached file.",
   mime_part("/home/ec2-user/sports/testfile.csv", "WeeklyData.csv")
