@@ -107,11 +107,11 @@ halftime_stats<-halftime_stats[which(!is.na(halftime_stats$line.y)),]
 halftime_stats<-halftime_stats[order(halftime_stats$game_id),]
 halftime_stats$CoversTotalLineUpdateTime <- as.character(halftime_stats$CoversTotalLineUpdateTime)
 
-diffs<-ddply(halftime_stats, .(game_id), transform, diff=pts.x - pts.x[1])
+diffs<-ddply(halftime_stats, .(game_id), transform, diff=pts.x[1] - pts.x[2])
 halftime_stats$half_diff <- diffs$diff
 halftime_stats$line.y<-as.numeric(halftime_stats$line.y)
 halftime_stats$line <- as.numeric(halftime_stats$line)
-mwt <- ddply(halftime_stats, .(game_id), transform, mwt=pts.x + pts.x[1] + line.y - line)
+mwt <- ddply(halftime_stats, .(game_id), transform, mwt=pts.x[1] + pts.x[2] + line.y - line)
 
 
 ## removes any anomalies or games with != 2 game_ids
@@ -167,7 +167,7 @@ f[,34:49] <- apply(f[,34:49], 2, function(x) as.numeric(as.character(x)))
 f[,51:52] <- apply(f[,51:52], 2, function(x) as.numeric(as.character(x)))
 
 ## Team1 and Team2 Halftime Differentials
-f$fg_percent <- ((f$HALF_FGM / f$HALF_FGA) - (f$SEASON_FGM / f$SEASON_FGA - 0.01))
+f$fg_percent <- ((f$HALF_FGM / f$HALF_FGA) - (f$SEASON_FGM / f$SEASON_FGA))
 f$FGM <- (f$HALF_FGM - (f$SEASON_FGM / f$SEASON_GP / 2))
 f$TPM <- (f$HALF_3PM - (f$SEASON_3PM / f$SEASON_GP / 2))
 f$FTM <- (f$HALF_FTM - (f$SEASON_FTM / f$SEASON_GP / 2 - 1))
@@ -177,12 +177,13 @@ f$OREB <- (f$HALF_OREB - (f$SEASON_OFFR / f$SEASON_GP / 2))
 f$COVERS_UPDATE<-as.character(f$COVERS_UPDATE)
 
 ## Cumulative Halftime Differentials
-f$chd_fg <- ddply(f, .(GAME_ID), transform, chd_fg = (fg_percent + fg_percent[1]) / 2)$chd_fg
-f$chd_fgm <- ddply(f, .(GAME_ID), transform, chd_fgm = (FGM + FGM[1]) / 2)$chd_fgm
-f$chd_tpm <- ddply(f, .(GAME_ID), transform, chd_tpm = (TPM + TPM[1]) / 2)$chd_tpm
-f$chd_ftm <- ddply(f, .(GAME_ID), transform, chd_ftm = (FTM + FTM[1]) / 2)$chd_ftm
-f$chd_to <- ddply(f, .(GAME_ID), transform, chd_to = (TO + TO[1]) / 2)$chd_to
-f$chd_oreb <- ddply(f, .(GAME_ID), transform, chd_oreb = (OREB + OREB[1]) / 2)$chd_oreb
+f <- f[order(f$GAME_ID),]
+f$chd_fg <- ddply(f, .(GAME_ID), transform, chd_fg = (fg_percent[1] + fg_percent[2]) / 2)$chd_fg
+f$chd_fgm <- ddply(f, .(GAME_ID), transform, chd_fgm = (FGM[1] + FGM[2]) / 2)$chd_fgm
+f$chd_tpm <- ddply(f, .(GAME_ID), transform, chd_tpm = (TPM[1] + TPM[2]) / 2)$chd_tpm
+f$chd_ftm <- ddply(f, .(GAME_ID), transform, chd_ftm = (FTM[1] + FTM[2]) / 2)$chd_ftm
+f$chd_to <- ddply(f, .(GAME_ID), transform, chd_to = (TO[1] + TO[2]) / 2)$chd_to
+f$chd_oreb <- ddply(f, .(GAME_ID), transform, chd_oreb = (OREB[1] + OREB[2]) / 2)$chd_oreb
 
 colnames(ncaafinal)[1] <- "GAME_ID"
 ncaafinal$key <- paste(ncaafinal$GAME_ID, ncaafinal$team)
