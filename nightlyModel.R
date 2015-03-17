@@ -34,7 +34,6 @@ lookup <- lDataFrames[[16]]
 ncaafinal <- lDataFrames[[10]]
 seasontotals <- lDataFrames[[14]]
 
-
 b<-apply(boxscores[,3:5], 2, function(x) strsplit(x, "-"))
 boxscores$fgm <- do.call("rbind",b$fgma)[,1]
 boxscores$fga <- do.call("rbind",b$fgma)[,2]
@@ -136,8 +135,8 @@ all<-all[match(unique(all$key), all$key),]
 colnames(all) <- c("GAME_ID","TEAM","HALF_FGM", "HALF_FGA", "HALF_3PM",
 "HALF_3PA", "HALF_FTM","HALF_FTA","HALF_OREB", "HALF_DREB", "HALF_REB", "HALF_AST", "HALF_STL", "HALF_BLK", "HALF_TO", "HALF_PF", "HALF_PTS",
 "HALF_TIMESTAMP", "TEAM1", "TEAM2", "GAME_DATE","GAME_TIME","REMOVE2","REMOVE3","MIN", "SEASON_FGM","SEASON_FGA","SEASON_FTM","SEASON_FTA","SEASON_3PM",
-"SEASON_3PA","SEASON_PTS","SEASON_OFFR","SEASON_DEFR","SEASON_REB","SEASON_AST","SEASON_TO","SEASON_STL", "SEASON_BLK","REMOVE4","REMOVE5","REMOVE6",
-"REMOVE7","REMOVE8","REMOVE9","LINE", "SPREAD", "COVERS_UPDATE","LINE_HALF", "SPREAD_HALF", "COVERS_HALF_UPDATE")
+"SEASON_3PA","SEASON_PTS","SEASON_OFFR","SEASON_DEFR","SEASON_REB","SEASON_AST","SEASON_TO","SEASON_STL", "SEASON_BLK","REMOVE5","REMOVE6",
+"REMOVE7","REMOVE8","REMOVE9","LINE", "SPREAD", "REMOVE12","COVERS_UPDATE","LINE_HALF", "SPREAD_HALF", "REMOVE10", "REMOVE11")
 all <- all[,-grep("REMOVE", colnames(all))]
 
 ## Add the season total stats
@@ -150,7 +149,7 @@ seasontotals$key <- paste(seasontotals$GAME_DATE, seasontotals$TEAM)
 
 x<-merge(seasontotals, all, by=c("key"))
 x<- x[,c(-1, -5, -16, -35)]
-final<-x[,c(1:53)]
+final<-x[,c(1:52)]
 colnames(final)[3:12] <- c("SEASON_GP", "SEASON_PPG", "SEASON_RPG", "SEASON_APG", "SEASON_SPG", "SEASON_BPG", "SEASON_TPG", "SEASON_FGP",
 "SEASON_FTP", "SEASON_3PP")
 #final$GAME_DATE <- seasontotals$GAME_DATE[1]
@@ -189,31 +188,47 @@ colnames(ncaafinal)[1] <- "GAME_ID"
 ncaafinal$key <- paste(ncaafinal$GAME_ID, ncaafinal$team)
 f$key <- paste(f$GAME_ID, f$TEAM.x)
 all <- merge(ncaafinal, f, by="key")
-all <- all[,c(2,15, 17:83)]
+all <- all[,c(2,15, 17:82)]
 all<-ddply(all, .(GAME_ID.x), transform, won=pts > min(pts))
 all$team <- ""
 all[seq(from=1, to=dim(all)[1], by=2),]$team <- "TEAM1"
 all[seq(from=2, to=dim(all)[1], by=2),]$team <- "TEAM2"
-all <- all[,c(1,56:71)]
+all <- all[,c(1,2,30,32,33,50,53,55:70)]
 wide <- reshape(all, direction = "wide", idvar="GAME_ID.x", timevar="team")
 wide$winningTeam <- "TEAM1"
 wide[which(wide$won.TEAM2 == TRUE),]$winningTeam <- "TEAM2"
-wide <- wide[,c(4:15,17:30, 32)]
+wide$finalScore<-wide$pts.TEAM1 - wide$pts.TEAM2
+#wide$finalDiff<-(wide$pts.TEAM1 - wide$HALF_PTS.TEAM1) - (wide$pts.TEAM2 - wide$HALF_PTS.TEAM2)
+wide <- wide[,c(3,6:21,24,31:36,45)]
 
-g<-glm(as.factor(winningTeam) ~ ., family="binomial", data=wide)
+
+#m <- lm(finalScore ~ ., data=wide)
+#m <- lm(formula = finalScore ~ HALF_PTS.TEAM1 *  LINE.TEAM1 * 
+#    mwt.TEAM1 * fg_percent.TEAM1 + TPM.TEAM1 + FTM.TEAM1 + OREB.TEAM1 +
+#    chd_fg.TEAM1 + LINE_HALF.TEAM1 + chd_oreb.TEAM1, data = wide)
+m <- lm(formula = finalScore ~ HALF_PTS.TEAM1 + LINE.TEAM1 + mwt.TEAM1 +
+    fg_percent.TEAM1 + TPM.TEAM1 + FTM.TEAM1 + OREB.TEAM1 + chd_fg.TEAM1 +
+    LINE_HALF.TEAM1 + chd_oreb.TEAM1 + HALF_PTS.TEAM1:fg_percent.TEAM1,
+    data = wide)
+
+#g<-glm(as.factor(winningTeam) ~ ., family="binomial", data=wide)
 
 ## cross validate the model
 accuracy <- c()
+preds <- list()
+actuals <- list()
 for(i in 1:20){
    set.seed(i)
    test <- wide[sample(dim(wide)[1])[1:10],]
    set.seed(i)
    train <- wide[-sample(dim(wide)[1])[1:10],]
-   p<-predict(g, newdata=test[,-27], family="binomial", se.fit=TRUE, type="response")
-   t1 <- table(data.frame(cbind(p$fit > .5, test$winningTeam)))[1,1] 
-   t2 <- table(data.frame(cbind(p$fit > .5, test$winningTeam)))[2,2]
-   accuracy[i] <- (t1+t2) / sum(table(data.frame(cbind(p$fit > .5, test$winningTeam))))
+   p<-predict(m, newdata=test[,-25], interval="predict")
+   #t1 <- table(data.frame(cbind(p$fit > .5, test$winningTeam)))[1,1] 
+   #t2 <- table(data.frame(cbind(p$fit > .5, test$winningTeam)))[2,2]
+   accuracy[i] <- cor(p[,1], test$finalScore)
+   preds[[i]] <- p[,1]
+   actuals[[i]] <- test$finalScore
 }
 
 
-save(g, file="nightlyModel.Rdat")
+save(m, file="nightlyModel.Rdat")

@@ -117,11 +117,10 @@ colnames(final)[41:50] <- c("SEASON_GP", "SEASON_PPG", "SEASON_RPG", "SEASON_APG
 #final$GAME_DATE<-games[match(final$GAME_ID, games$game_id),]$game_date
 final<-final[order(final$GAME_DATE, decreasing=TRUE),]
 
-write.csv(final, file="/home/ec2-user/sports/alldata.csv", row.names=FALSE)
-
-final <- subset(final, LINE_HALF != "OFF")
+#final <- subset(final, LINE_HALF != "OFF")
 final$LINE_HALF <- as.numeric(final$LINE_HALF)
 final$LINE <- as.numeric(final$LINE)
+final$COVERS_UPDATE<-as.character(final$COVERS_UPDATE)
 final<-ddply(final, .(GAME_ID), transform, mwt=HALF_PTS[1] + HALF_PTS[2] + LINE_HALF - LINE)
 final <- ddply(final, .(GAME_ID), transform, half_diff=HALF_PTS[1] - HALF_PTS[2])
 
@@ -132,7 +131,7 @@ final[,c(38,41:63)]<-apply(final[,c(38,41:63)], 2, as.numeric)
 
 
 ## Team1 and Team2 Halftime Differentials
-final$fg_percent <- ((final$HALF_FGM / final$HALF_FGA) - (final$SEASON_FGM / final$SEASON_FGA - 0.01))
+final$fg_percent <- ((final$HALF_FGM / final$HALF_FGA) - (final$SEASON_FGM / final$SEASON_FGA))
 final$fg_percent_noadjustment <- (final$HALF_FGM / final$HALF_FGA) - (final$SEASON_FGM / final$SEASON_FGA)
 final$FGM <- (final$HALF_FGM - (final$SEASON_FGM / final$SEASON_GP / 2))
 final$TPM <- (final$HALF_3PM - (final$SEASON_3PM / final$SEASON_GP / 2))
@@ -155,10 +154,13 @@ emails <- c( "<tanyacash@gmail.com>" , "<malloyc@yahoo.com>", "<sschopen@gmail.c
 #emails <- c("<tanyacash@gmail.com>")
 
 from <- "<tanyacash@gmail.com>"
-subject <- "Made adjustments to calculations - compare this one to site"
+subject <- "NCAA Data - all data"
 body <- c(
   "Chris -- see the attached file.",
-  mime_part("/home/ec2-user/sports/testfile.csv", "WeeklyData.csv")
+  mime_part("/home/ec2-user/sports/testfile.csv", "allData.csv")
 )
 sendmailV(from, to=emails, subject, body)
+
+
+
 
