@@ -25,8 +25,8 @@ def index():
     today = date.today()
     today = today.strftime("%Y%m%d")
     vals = [50,55,56,100]
-    for v in range(0,3):
-        url = urllib2.urlopen('http://scores.espn.go.com/ncb/scoreboard?date=' + today + '&confId=' + str(vals[v]))
+    for vi in range(0,3):
+        url = urllib2.urlopen('http://scores.espn.go.com/ncb/scoreboard?date=' + today + '&confId=' + str(vals[vi]))
         soup = bs(url.read(), ['fast', 'lxml'])
         links = soup.findAll('a', href=re.compile('conversation.*'))
         urls = [link.get('href') for link in links]
