@@ -197,7 +197,7 @@ all <- all[,c(1,2,30,32,33,50,53,55:70)]
 wide <- reshape(all, direction = "wide", idvar="GAME_ID.x", timevar="team")
 wide$winningTeam <- "TEAM1"
 wide[which(wide$won.TEAM2 == TRUE),]$winningTeam <- "TEAM2"
-wide$finalScore<-wide$pts.TEAM1 - wide$pts.TEAM2
+wide$finalScore<-(wide$pts.TEAM1 - wide$HALF_PTS.TEAM1) + (wide$pts.TEAM2 - wide$HALF_PTS.TEAM2)
 #wide$finalDiff<-(wide$pts.TEAM1 - wide$HALF_PTS.TEAM1) - (wide$pts.TEAM2 - wide$HALF_PTS.TEAM2)
 wide <- wide[,c(3,6:21,24,31:36,45)]
 

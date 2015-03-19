@@ -10,7 +10,7 @@ import sqlite3
 import pandas as pd
 from urlparse import urlparse
 from bs4 import BeautifulSoup as bs
-from datetime import date
+from datetime import date, timedelta
 
 db = sqlite3.connect('/home/ec2-user/sports/sports.db')
 
@@ -25,8 +25,10 @@ lines = tables[0]
 away = lines.findAll('div', {'class':'team_away'})
 home = lines.findAll('div', {'class':'team_home'})
 covers = lines.findAll('td', {'class':'covers_top'})
-today = date.today()
-today = today.strftime("%m/%d/%Y")
+#today = date.today()
+#today = today.strftime("%m/%d/%Y")
+today = str(datetime.datetime.now() - timedelta(hours=2))[0:10]
+today = time.strftime("%m/%d/%Y", time.strptime(today, '%Y-%m-%d'))
 
 lines = []
 spreads = []
