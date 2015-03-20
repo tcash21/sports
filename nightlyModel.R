@@ -193,12 +193,77 @@ all<-ddply(all, .(GAME_ID.x), transform, won=pts > min(pts))
 all$team <- ""
 all[seq(from=1, to=dim(all)[1], by=2),]$team <- "TEAM1"
 all[seq(from=2, to=dim(all)[1], by=2),]$team <- "TEAM2"
-all <- all[,c(1,2,30,32,33,50,53,55:70)]
+all <- all[,c(1,2,6,30,32,33,50,53:70)]
 wide <- reshape(all, direction = "wide", idvar="GAME_ID.x", timevar="team")
 wide$winningTeam <- "TEAM1"
 wide[which(wide$won.TEAM2 == TRUE),]$winningTeam <- "TEAM2"
 wide$finalScore<-(wide$pts.TEAM1 - wide$HALF_PTS.TEAM1) + (wide$pts.TEAM2 - wide$HALF_PTS.TEAM2)
 #wide$finalDiff<-(wide$pts.TEAM1 - wide$HALF_PTS.TEAM1) - (wide$pts.TEAM2 - wide$HALF_PTS.TEAM2)
+wide$secondHalfPts<-(wide$pts.TEAM1 - wide$HALF_PTS.TEAM1) + (wide$pts.TEAM2 - wide$HALF_PTS.TEAM2)
+wide$Over<-wide$secondHalfPts > wide$LINE_HALF.TEAM1
+
+a<-wide[,c("TEAM1.TEAM1", "pts.TEAM2")]
+b<-wide[,c("TEAM2.TEAM2", "pts.TEAM1")]
+colnames(a) <- c("TEAM", "PA")
+colnames(b) <- c("TEAM", "PA")
+a <- rbind(a,b)
+papg<-ddply(a, .(TEAM), summarize, PAPG=sum(PA) / length(TEAM))
+
+a<-wide[,c("TEAM1.TEAM1", "pts.TEAM1")]
+b<-wide[,c("TEAM2.TEAM2", "pts.TEAM2")]
+colnames(a) <- c("TEAM", "PF")
+colnames(b) <- c("TEAM", "PF")
+a <- rbind(a,b)
+pfpg<-ddply(a, .(TEAM), summarize, PFPG=sum(PF) / length(TEAM))
+
+papg<-papg[match(pfpg$TEAM, papg$TEAM),]
+stats<-data.frame(cbind(papg, pfpg))
+stats <- stats[,-3]
+write.csv(stats, row.names=FALSE, file="pa_stats.csv")
+
+wide$PF1<-pfpg[match(wide$TEAM1.TEAM1, pfpg$TEAM),]$PF
+wide$PF2<-pfpg[match(wide$TEAM2.TEAM2, pfpg$TEAM),]$PF
+wide$PA1<-papg[match(wide$TEAM1.TEAM1, papg$TEAM),]$PA
+wide$PA2<-papg[match(wide$TEAM2.TEAM2, papg$TEAM),]$PA
+
+r <- randomForest(as.factor(Over) ~ PA1 + PA2 + PF1 + PF2 + LINE_HALF.TEAM1 + HALF_PTS.TEAM1 + HALF_PTS.TEAM2, data=wide)
+save(r, "randomForestModel.Rdat")
+
+result <- wide
+result$mwtO <- as.numeric(result$mwt.TEAM1 < 7.1 & result$mwt.TEAM1 > -3.9)
+result$chd_fgO <- as.numeric(result$chd_fg.TEAM1 < .15 & result$chd_fg.TEAM1 > -.07)
+result$chd_fgmO <- as.numeric(result$chd_fgm.TEAM1 < -3.9)
+result$chd_tpmO <- as.numeric(result$chd_tpm.TEAM1 < -1.9)
+result$chd_ftmO <- as.numeric(result$chd_ftm.TEAM1 < -.9)
+result$chd_toO <- as.numeric(result$chd_to.TEAM1 < -1.9)
+
+result$mwtO[is.na(result$mwtO)] <- 0
+result$chd_fgO[is.na(result$chd_fgO)] <- 0
+result$chd_fgmO[is.na(result$chd_fgmO)] <- 0
+result$chd_tpmO[is.na(result$chd_tpmO)] <- 0
+result$chd_ftmO[is.na(result$chd_ftmO)] <- 0
+result$chd_toO[is.na(result$chd_toO)] <- 0
+result$overSum <- result$mwtO + result$chd_fgO + result$chd_fgmO + result$chd_tpmO + result$chd_ftmO + result$chd_toO
+
+result$fullSpreadU <- as.numeric(abs(as.numeric(result$SPREAD_HALF.TEAM1)) > 10.9)
+result$mwtU <- as.numeric(result$mwt.TEAM1 > 7.1)
+result$chd_fgU <- as.numeric(result$chd_fg.TEAM1 > .15 | result$chd_fg.TEAM1 < -.07)
+result$chd_fgmU <- 0
+result$chd_tpmU <- 0
+result$chd_ftmU <- as.numeric(result$chd_ftm.TEAM1 > -0.9)
+result$chd_toU <- as.numeric(result$chd_to.TEAM1 > -1.9)
+
+result$mwtU[is.na(result$mwtU)] <- 0
+result$chd_fgO[is.na(result$chd_fgU)] <- 0
+result$chd_fgmU[is.na(result$chd_fgmU)] <- 0
+result$chd_tpmU[is.na(result$chd_tpmU)] <- 0
+result$chd_ftmU[is.na(result$chd_ftmU)] <- 0
+result$chd_toU[is.na(result$chd_toU)] <- 0
+result$underSum <- result$fullSpreadU + result$mwtU + result$chd_fgU + result$chd_fgmU + result$chd_tpmU + result$chd_ftmU + result$chd_toU
+
+result <- result[-which(is.na(result$SPREAD_HALF.TEAM1) | is.na(result$underSum)),]
+
+
 wide <- wide[,c(3,6:21,24,31:36,45)]
 
 

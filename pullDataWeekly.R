@@ -147,7 +147,52 @@ final$chd_ftm <- ddply(final, .(GAME_ID), transform, chd_ftm = (FTM[1] + FTM[2])
 final$chd_to <- ddply(final, .(GAME_ID), transform, chd_to = (TO[1] + TO[1]) / 2)$chd_to
 final$chd_oreb <- ddply(final, .(GAME_ID), transform, chd_oreb = (OREB[1] + OREB[2]) / 2)$chd_oreb
 
-write.csv(final, file="/home/ec2-user/sports/testfile.csv", row.names=FALSE)
+## Add Criteria for Over/Under
+result <- final
+result$mwtO <- as.numeric(result$mwt < 7.1 & result$mwt > -3.9)
+result$chd_fgO <- as.numeric(result$chd_fg < .15 & result$chd_fg > -.07)
+result$chd_fgmO <- as.numeric(result$chd_fgm < -3.9)
+result$chd_tpmO <- as.numeric(result$chd_tpm < -1.9)
+result$chd_ftmO <- as.numeric(result$chd_ftm < -.9)
+result$chd_toO <- as.numeric(result$chd_to < -1.9)
+
+result$mwtO[is.na(result$mwtO)] <- 0
+result$chd_fgO[is.na(result$chd_fgO)] <- 0
+result$chd_fgmO[is.na(result$chd_fgmO)] <- 0
+result$chd_tpmO[is.na(result$chd_tpmO)] <- 0
+result$chd_ftmO[is.na(result$chd_ftmO)] <- 0
+result$chd_toO[is.na(result$chd_toO)] <- 0
+result$overSum <- result$mwtO + result$chd_fgO + result$chd_fgmO + result$chd_tpmO + result$chd_ftmO + result$chd_toO
+
+result$fullSpreadU <- as.numeric(abs(as.numeric(result$SPREAD)) > 10.9)
+result$mwtU <- as.numeric(result$mwt > 7.1)
+result$chd_fgU <- as.numeric(result$chd_fg > .15 | result$chd_fg < -.07)
+result$chd_fgmU <- 0
+result$chd_tpmU <- 0
+result$chd_ftmU <- as.numeric(result$chd_ftm > -0.9)
+result$chd_toU <- as.numeric(result$chd_to > -1.9)
+
+result$mwtU[is.na(result$mwtU)] <- 0
+result$chd_fgO[is.na(result$chd_fgU)] <- 0
+result$chd_fgmU[is.na(result$chd_fgmU)] <- 0
+result$chd_tpmU[is.na(result$chd_tpmU)] <- 0
+result$chd_ftmU[is.na(result$chd_ftmU)] <- 0
+result$chd_toU[is.na(result$chd_toU)] <- 0
+result$underSum <- result$fullSpreadU + result$mwtU + result$chd_fgU + result$chd_fgmU + result$chd_tpmU + result$chd_ftmU + result$chd_toU
+
+#result <- subset(result, !is.na(LINE_HALF))
+result$SECOND_HALF_PTS <- result$FINAL_PTS - result$HALF_PTS
+result$Over<- ddply(result, .(GAME_ID), transform, over=sum(SECOND_HALF_PTS) > LINE_HALF)$over
+#fill <- which(is.na(result$underSum) | is.na(result$overSum) | is.na(result$LINE_HALF))
+#train <- result[-which(is.na(result$underSum) | is.na(result$overSum) | is.na(result$LINE_HALF)),]
+#result$overPred <- ""
+#r <- randomForest(formula = as.factor(Over) ~ underSum * overSum * LINE_HALF, data = train)
+#result$overPred[fill] <- "NA"
+
+#save(r, file="~/sports/randomForestModel.Rdat")
+
+
+write.csv(result, file="/home/ec2-user/sports/testfile.csv", row.names=FALSE)
 
 sendmailV <- Vectorize( sendmail , vectorize.args = "to" )
 emails <- c( "<tanyacash@gmail.com>" , "<malloyc@yahoo.com>", "<sschopen@gmail.com>")
