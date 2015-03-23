@@ -202,32 +202,17 @@ wide$finalScore<-(wide$pts.TEAM1 - wide$HALF_PTS.TEAM1) + (wide$pts.TEAM2 - wide
 wide$secondHalfPts<-(wide$pts.TEAM1 - wide$HALF_PTS.TEAM1) + (wide$pts.TEAM2 - wide$HALF_PTS.TEAM2)
 wide$Over<-wide$secondHalfPts > wide$LINE_HALF.TEAM1
 
-a<-wide[,c("TEAM1.TEAM1", "pts.TEAM2")]
-b<-wide[,c("TEAM2.TEAM2", "pts.TEAM1")]
-colnames(a) <- c("TEAM", "PA")
-colnames(b) <- c("TEAM", "PA")
-a <- rbind(a,b)
-papg<-ddply(a, .(TEAM), summarize, PAPG=sum(PA) / length(TEAM))
+wide$PA1<-as.numeric(papg[match(wide$TEAM1.TEAM1, papg$team),]$pa)
+wide$PA2<-as.numeric(papg[match(wide$TEAM2.TEAM2, papg$team),]$pa)
+wide$PF1<-as.numeric(papg[match(wide$TEAM1.TEAM1, papg$team),]$pf)
+wide$PF2<-as.numeric(papg[match(wide$TEAM2.TEAM2, papg$team),]$pf)
+boxscores$key <- paste(boxscores$game_id, boxscores$team)
+all<-merge(boxscores, ncaafinal, by="key")
+all$secondHalfPts <- all$pts.y - all$pts.x
 
-a<-wide[,c("TEAM1.TEAM1", "pts.TEAM1")]
-b<-wide[,c("TEAM2.TEAM2", "pts.TEAM2")]
-colnames(a) <- c("TEAM", "PF")
-colnames(b) <- c("TEAM", "PF")
-a <- rbind(a,b)
-pfpg<-ddply(a, .(TEAM), summarize, PFPG=sum(PF) / length(TEAM))
 
-papg<-papg[match(pfpg$TEAM, papg$TEAM),]
-stats<-data.frame(cbind(papg, pfpg))
-stats <- stats[,-3]
-write.csv(stats, row.names=FALSE, file="pa_stats.csv")
-
-wide$PF1<-pfpg[match(wide$TEAM1.TEAM1, pfpg$TEAM),]$PF
-wide$PF2<-pfpg[match(wide$TEAM2.TEAM2, pfpg$TEAM),]$PF
-wide$PA1<-papg[match(wide$TEAM1.TEAM1, papg$TEAM),]$PA
-wide$PA2<-papg[match(wide$TEAM2.TEAM2, papg$TEAM),]$PA
-
-r <- randomForest(as.factor(Over) ~ PA1 + PA2 + PF1 + PF2 + LINE_HALF.TEAM1 + HALF_PTS.TEAM1 + HALF_PTS.TEAM2, data=wide)
-save(r, "randomForestModel.Rdat")
+#r <- randomForest(as.factor(Over) ~ PA1 + PA2 + PF1 + PF2 + LINE_HALF.TEAM1 + HALF_PTS.TEAM1 + HALF_PTS.TEAM2, data=wide)
+#save(r, "randomForestModel.Rdat")
 
 result <- wide
 result$mwtO <- as.numeric(result$mwt.TEAM1 < 7.1 & result$mwt.TEAM1 > -3.9)
@@ -271,10 +256,10 @@ wide <- wide[,c(3,6:21,24,31:36,45)]
 #m <- lm(formula = finalScore ~ HALF_PTS.TEAM1 *  LINE.TEAM1 * 
 #    mwt.TEAM1 * fg_percent.TEAM1 + TPM.TEAM1 + FTM.TEAM1 + OREB.TEAM1 +
 #    chd_fg.TEAM1 + LINE_HALF.TEAM1 + chd_oreb.TEAM1, data = wide)
-m <- lm(formula = finalScore ~ HALF_PTS.TEAM1 + LINE.TEAM1 + mwt.TEAM1 +
-    fg_percent.TEAM1 + TPM.TEAM1 + FTM.TEAM1 + OREB.TEAM1 + chd_fg.TEAM1 +
-    LINE_HALF.TEAM1 + chd_oreb.TEAM1 + HALF_PTS.TEAM1:fg_percent.TEAM1,
-    data = wide)
+#m <- lm(formula = finalScore ~ HALF_PTS.TEAM1 + LINE.TEAM1 + mwt.TEAM1 +
+#    fg_percent.TEAM1 + TPM.TEAM1 + FTM.TEAM1 + OREB.TEAM1 + chd_fg.TEAM1 +
+#    LINE_HALF.TEAM1 + chd_oreb.TEAM1 + HALF_PTS.TEAM1:fg_percent.TEAM1,
+#    data = wide)
 
 #g<-glm(as.factor(winningTeam) ~ ., family="binomial", data=wide)
 
@@ -287,10 +272,10 @@ for(i in 1:20){
    test <- wide[sample(dim(wide)[1])[1:10],]
    set.seed(i)
    train <- wide[-sample(dim(wide)[1])[1:10],]
-   p<-predict(m, newdata=test[,-25], interval="predict")
+   p<-predict(m2, newdata=test[,c(-49, -50)], interval="predict", level=.75)
    #t1 <- table(data.frame(cbind(p$fit > .5, test$winningTeam)))[1,1] 
    #t2 <- table(data.frame(cbind(p$fit > .5, test$winningTeam)))[2,2]
-   accuracy[i] <- cor(p[,1], test$finalScore)
+   accuracy[i] <- cor(p[,1], test$secondHalfPts)
    preds[[i]] <- p[,1]
    actuals[[i]] <- test$finalScore
 }
