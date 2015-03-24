@@ -16,23 +16,25 @@ lDataFrames <- vector("list", length=length(tables))
  ## create a data.frame for each table
 for (i in seq(along=tables)) {
   if(tables[[i]] == 'NCAAHalflines' | tables[[i]] == 'NCAAlines'){
+     cat(i, ":", tables[[i]], "\n")
      #lDataFrames[[i]] <- dbGetQuery(conn=con, statement=paste0("SELECT n.away_team, n.home_team, n.game_date, n.line, n.spread, n.game_time from '", tables[[i]], "' n inner join 
      #(select game_date, away_team,home_team, max(game_time) as mgt from '", tables[[i]], "' group by game_date, away_team, home_team) s2 on s2.game_date = n.game_date and 
      # s2.away_team = n.away_team and s2.home_team = n.home_team and n.game_time = s2.mgt;"))
      lDataFrames[[i]] <- dbGetQuery(conn=con, statement=paste0("SELECT * FROM '", tables[[i]], "'"))
   } else {
       lDataFrames[[i]] <- dbGetQuery(conn=con, statement=paste("SELECT * FROM '", tables[[i]], "'",sep=""))
+      cat(i, ":", tables[[i]], "\n")
   }
 }
 
-halflines <- lDataFrames[[9]]
-games <- lDataFrames[[11]]
-lines <- lDataFrames[[12]]
-teamstats <- lDataFrames[[13]]
-boxscores <- lDataFrames[[15]]
-lookup <- lDataFrames[[16]]
-ncaafinal <- lDataFrames[[10]]
-seasontotals <- lDataFrames[[14]]
+halflines <- lDataFrames[[12]]
+games <- lDataFrames[[17]]
+lines <- lDataFrames[[18]]
+teamstats <- lDataFrames[[19]]
+boxscores <- lDataFrames[[21]]
+lookup <- lDataFrames[[22]]
+ncaafinal <- lDataFrames[[16]]
+seasontotals <- lDataFrames[[20]]
 
 b<-apply(boxscores[,3:5], 2, function(x) strsplit(x, "-"))
 boxscores$fgm <- do.call("rbind",b$fgma)[,1]
