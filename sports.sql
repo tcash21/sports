@@ -219,4 +219,38 @@ CREATE TABLE NBAHalflines(
         PRIMARY KEY (away_team, home_team, game_date, line, spread)
 );
 CREATE TABLE pointsAgainstFor ( team text, pa float, pf float);
+CREATE TABLE NCAASBTeamLookup (sb_team CHAR(50) NOT NULL, espn_abbr CHAR(5), PRIMARY KEY (sb_team));
+CREATE TABLE NCAASBLines (  away_team CHAR(40) NOT NULL,
+        home_team CHAR(40) NOT NULL,
+        line CHAR(10) NOT NULL,
+        spread CHAR(10) NOT NULL,
+        game_date TEXT NOT NULL,
+        game_time TEXT NOT NULL,
+        PRIMARY KEY (away_team, home_team, game_date, line, spread)
+);
+CREATE TABLE NCAASBHalfLines (away_team CHAR(40) NOT NULL,
+        home_team CHAR(40) NOT NULL,
+        line CHAR(10) NOT NULL,
+        spread CHAR(10) NOT NULL,
+        game_date TEXT NOT NULL,
+        game_time TEXT NOT NULL,
+        PRIMARY KEY (away_team, home_team, game_date, line, spread)
+);
+CREATE TABLE NBASBTeamLookup (sb_team CHAR(50) NOT NULL, espn_abbr CHAR(5), PRIMARY KEY (sb_team));
+CREATE TABLE NBASBLines (  away_team CHAR(40) NOT NULL,
+        home_team CHAR(40) NOT NULL,
+        line CHAR(10) NOT NULL,
+        spread CHAR(10) NOT NULL,
+        game_date TEXT NOT NULL,
+        game_time TEXT NOT NULL,
+        PRIMARY KEY (away_team, home_team, game_date, line, spread)
+);
+CREATE TABLE NBASBHalfLines (away_team CHAR(40) NOT NULL,
+        home_team CHAR(40) NOT NULL,
+        line CHAR(10) NOT NULL,
+        spread CHAR(10) NOT NULL,
+        game_date TEXT NOT NULL,
+        game_time TEXT NOT NULL,
+        PRIMARY KEY (away_team, home_team, game_date, line, spread)
+);
 
