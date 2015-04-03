@@ -202,18 +202,11 @@ all[seq(from=2, to=dim(all)[1], by=2),]$team <- "TEAM2"
 wide <- reshape(all, direction = "wide", idvar="GAME_ID.x", timevar="team")
 wide$winningTeam <- "TEAM1"
 wide[which(wide$won.TEAM2 == TRUE),]$winningTeam <- "TEAM2"
-wide$finalScore<-wide$pts.TEAM1 - wide$pts.TEAM2
-#wide$finalDiff<-(wide$pts.TEAM1 - wide$HALF_PTS.TEAM1) - (wide$pts.TEAM2 - wide$HALF_PTS.TEAM2)
-wide <- wide[,c(65,66,68,69,70:83,45,128,155:160,169)]
+wide$secondHalfPts <- (wide$pts.TEAM1 - wide$HALF_PTS.TEAM1) + (wide$pts.TEAM2 - wide$HALF_PTS.TEAM2)
+wide$Over<-wide$secondHalfPts > wide$LINE_HALF.TEAM1
 
-#m <- lm(finalScore ~ ., data=wide)
-m <- lm(formula = finalScore ~ HALF_PTS.TEAM1 *  LINE.TEAM1 * 
-    mwt.TEAM1 * fg_percent.TEAM1 + TPM.TEAM1 + FTM.TEAM1 + OREB.TEAM1 +
-    chd_fg.TEAM1 + LINE_HALF.TEAM1 + chd_oreb.TEAM1, data = wide)
-m <- lm(formula = finalScore ~ HALF_PTS.TEAM1 + LINE.TEAM1 + mwt.TEAM1 +
-    fg_percent.TEAM1 + TPM.TEAM1 + FTM.TEAM1 + OREB.TEAM1 + chd_fg.TEAM1 +
-    LINE_HALF.TEAM1 + chd_oreb.TEAM1 + HALF_PTS.TEAM1:fg_percent.TEAM1,
-    data = wide)
+#wide$finalDiff<-(wide$pts.TEAM1 - wide$HALF_PTS.TEAM1) - (wide$pts.TEAM2 - wide$HALF_PTS.TEAM2)
+#wide <- wide[,c(65,66,68,69,70:83,45,128,155:160,169)]
 
 result <- wide
 result$mwtO <- as.numeric(result$mwt.TEAM1 < 7.1 & result$mwt.TEAM1 > -3.9)
@@ -246,6 +239,27 @@ result$chd_tpmU[is.na(result$chd_tpmU)] <- 0
 result$chd_ftmU[is.na(result$chd_ftmU)] <- 0
 result$chd_toU[is.na(result$chd_toU)] <- 0
 result$underSum <- result$fullSpreadU + result$mwtU + result$chd_fgU + result$chd_fgmU + result$chd_tpmU + result$chd_ftmU + result$chd_toU
+
+result <- result[,-grep("DATE", colnames(result))]
+result <- result[,-grep("timestamp", colnames(result))]
+result <- result[,-grep("TIME", colnames(result))]
+result<- result[,c(-1:-14,-77:-91)]
+result <- result[,c(-12:-14,-31,-74:-76,-92,-93,-108:-113,-120:-128)]
+target <- as.numeric(result$Over)
+result <- result[,-105:-106]
+result <- result[,-27]
+numLevels <-  rep(1, times=103)
+numLevels <- c(numLevels, c(2,2,2,2,2,1,2,2,2,2,2,2,2,1))
+
+g<-glinternet(as.matrix(result), target, numLevels, family="binomial")
+coco<-lapply(g$activeSet, function(x) x["contcont"])
+coco<-lapply(coco, data.frame)
+coco<-do.call('rbind', coco)
+#train <- result[,c(53,62,22,94,44,65,4,80,38,46,9,86,77,85,21,25,71,90,67)]
+
+r <- randomForest(as.factor(target) ~ SEASON_RPG.TEAM2 * chd_fg.TEAM1 + HALF_STL.TEAM1 * SEASON_2PA.TEAM2 + SPREAD_HALF.TEAM1 * SEASON_BGP.TEAM2 + SEASON_DEFRPG.TEAM1 * HALF_BLK.TEAM2, data=result)
+
+caco<-lapply(g$activeSet, function(x) x["catcont"])
 
 
 

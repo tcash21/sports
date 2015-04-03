@@ -54,12 +54,18 @@ lookup$away_team <- lookup$covers_team
 lookup$home_team <- lookup$covers_team
 
 ## Total Lines
-lines$game_time<-as.POSIXlt(lines$game_time)
+## lines$game_time<-as.POSIXlt(lines$game_time)
+## lines<-lines[order(lines$home_team, lines$game_time),]
+
+lines <- subset(lines, line != 'OFF')
 lines<-lines[order(lines$home_team, lines$game_time),]
-lines$key <- paste(lines$away_team, lines$home_team, lines$game_date)
-res2 <- tapply(1:nrow(lines), INDEX=lines$key, FUN=function(idxs) idxs[lines[idxs,'line'] != 'OFF'][1])
-first<-lines[res2[which(!is.na(res2))],]
-lines <- first[,1:6]
+fl<-ddply(lines, .(away_team, home_team, game_date), function(x) x[c(1, nrow(x)),])
+fl$line <- as.numeric(fl$line)
+fl <- fl[-grep(' 00:', fl$game_time),]
+fl$key <- paste(fl$away_team, fl$home_team, fl$game_date)
+fl$line_change<- rep(aggregate(line ~ key, data=fl, function(x) x[2] - x[1])[,2], each=2)
+fl<-fl[seq(2, dim(fl)[1], by=2),]
+lines <- fl[,c(1:6,8)]
 
 ## Merge line data with lookup table
 la<-merge(lookup, lines, by="away_team")
@@ -72,12 +78,18 @@ colnames(m3a)[49] <- "CoversTotalLineUpdateTime"
 colnames(m3h)[49] <- "CoversTotalLineUpdateTime"
 
 ## Halftime Lines - use the first one after "OFF" for consistency
-halflines$game_time<-as.POSIXlt(halflines$game_time)
+## halflines$game_time<-as.POSIXlt(halflines$game_time)
+## halflines<-halflines[order(halflines$home_team, halflines$game_time),]
+
+halflines <- subset(halflines, line != 'OFF')
 halflines<-halflines[order(halflines$home_team, halflines$game_time),]
-halflines$key <- paste(halflines$away_team, halflines$home_team, halflines$game_date)
-res2 <- tapply(1:nrow(halflines), INDEX=halflines$key, FUN=function(idxs) idxs[halflines[idxs,'line'] != 'OFF'][1])
-first<-halflines[res2[which(!is.na(res2))],]
-halflines <- first[,1:6]
+fl <- fl[-grep(' 00:', fl$game_time),]
+fl<-ddply(halflines, .(away_team, home_team, game_date), function(x) x[c(1, nrow(x)),])
+fl$line <- as.numeric(fl$line)
+fl$key <- paste(fl$away_team, fl$home_team, fl$game_date)
+fl$half_line_change<-rep(aggregate(line ~ key, data=fl, function(x) x[2] - x[1])[,2], each=2)
+fl<-fl[seq(2,dim(fl)[1],by=2),]
+halflines <- fl[,c(1:6,8)]
 
 ## Merge half lines with lookup table
 la2<-merge(lookup, halflines, by="away_team")
@@ -92,15 +104,15 @@ colnames(m3h2)[49] <- "CoversHalfLineUpdateTime"
 l<-merge(m3a, m3a2, by=c("key"))
 #l<-l[match(m3a$key, l$key.y),]
 m3a<-m3a[match(l$key, m3a$key),]
-m3a<-cbind(m3a, l[,94:96])
+m3a<-cbind(m3a, l[,c(95:97,99)])
 l2<-merge(m3h, m3h2, by=c("key"))
 m3h<-m3h[match(l2$key, m3h$key),]
-m3h<-cbind(m3h, l2[,94:96])
+m3h<-cbind(m3h, l2[,c(95:97,99)])
 colnames(m3h)[44:45] <- c("home_team.x", "home_team.y")
 colnames(m3a)[41] <- "home_team"
 #colnames(m3a)[54:55] <- c("away_team.x", "away_team.y")
 #all <- rbind(m3a, m3h)
-m3h <- m3h[,1:52]
+m3a <- m3a[,1:54]
 
 halftime_stats<-rbind(m3a,m3h)
 halftime_stats<-halftime_stats[-which(halftime_stats$game_id %in% names(which(table(halftime_stats$game_id) != 2)) ),]
@@ -139,7 +151,7 @@ colnames(all) <- c("GAME_ID","TEAM","HALF_FGM", "HALF_FGA", "HALF_3PM",
 "HALF_3PA", "HALF_FTM","HALF_FTA","HALF_OREB", "HALF_DREB", "HALF_REB", "HALF_AST", "HALF_STL", "HALF_BLK", "HALF_TO", "HALF_PF", "HALF_PTS",
 "HALF_TIMESTAMP", "TEAM1", "TEAM2", "GAME_DATE","GAME_TIME","REMOVE2","REMOVE3","MIN", "SEASON_FGM","SEASON_FGA","SEASON_FTM","SEASON_FTA","SEASON_3PM",
 "SEASON_3PA","SEASON_PTS","SEASON_OFFR","SEASON_DEFR","SEASON_REB","SEASON_AST","SEASON_TO","SEASON_STL", "SEASON_BLK","REMOVE5","REMOVE6",
-"REMOVE7","REMOVE8","REMOVE9","LINE", "SPREAD", "REMOVE12","COVERS_UPDATE","LINE_HALF", "SPREAD_HALF", "REMOVE10", "REMOVE11")
+"REMOVE7","REMOVE8","REMOVE9","LINE", "SPREAD", "REMOVE12","COVERS_UPDATE","LINE_CHANGE","LINE_HALF", "SPREAD_HALF", "REMOVE10", "HALF_LINE_CHANGE", "REMOVE11")
 all <- all[,-grep("REMOVE", colnames(all))]
 
 ## Add the season total stats
@@ -152,7 +164,7 @@ seasontotals$key <- paste(seasontotals$GAME_DATE, seasontotals$TEAM)
 
 x<-merge(seasontotals, all, by=c("key"))
 x<- x[,c(-1, -5, -16, -35)]
-final<-x[,c(1:52)]
+final <- x
 colnames(final)[3:12] <- c("SEASON_GP", "SEASON_PPG", "SEASON_RPG", "SEASON_APG", "SEASON_SPG", "SEASON_BPG", "SEASON_TPG", "SEASON_FGP",
 "SEASON_FTP", "SEASON_3PP")
 #final$GAME_DATE <- seasontotals$GAME_DATE[1]
@@ -166,7 +178,7 @@ f$half_diff <- half_stats[match(f$GAME_ID, half_stats$game_id),]$half_diff
 f[,3:12] <- apply(f[,3:12], 2, function(x) as.numeric(as.character(x)))
 f[,14:28] <- apply(f[,14:28], 2, function(x) as.numeric(as.character(x)))
 f[,34:49] <- apply(f[,34:49], 2, function(x) as.numeric(as.character(x)))
-f[,51:52] <- apply(f[,51:52], 2, function(x) as.numeric(as.character(x)))
+f[,52:53] <- apply(f[,52:53], 2, function(x) as.numeric(as.character(x)))
 
 ## Team1 and Team2 Halftime Differentials
 f$fg_percent <- ((f$HALF_FGM / f$HALF_FGA) - (f$SEASON_FGM / f$SEASON_FGA))
@@ -191,12 +203,12 @@ colnames(ncaafinal)[1] <- "GAME_ID"
 ncaafinal$key <- paste(ncaafinal$GAME_ID, ncaafinal$team)
 f$key <- paste(f$GAME_ID, f$TEAM.x)
 all <- merge(ncaafinal, f, by="key")
-all <- all[,c(2,15, 17:82)]
+all <- all[,c(2,15, 17:84)]
 all<-ddply(all, .(GAME_ID.x), transform, won=pts > min(pts))
 all$team <- ""
 all[seq(from=1, to=dim(all)[1], by=2),]$team <- "TEAM1"
 all[seq(from=2, to=dim(all)[1], by=2),]$team <- "TEAM2"
-all <- all[,c(1,2,6,30,32,33,50,53:70)]
+all <- all[,c(1:14, 16:30,32,33,36:51,53:72)]
 wide <- reshape(all, direction = "wide", idvar="GAME_ID.x", timevar="team")
 wide$winningTeam <- "TEAM1"
 wide[which(wide$won.TEAM2 == TRUE),]$winningTeam <- "TEAM2"
@@ -204,16 +216,19 @@ wide$finalScore<-(wide$pts.TEAM1 - wide$HALF_PTS.TEAM1) + (wide$pts.TEAM2 - wide
 #wide$finalDiff<-(wide$pts.TEAM1 - wide$HALF_PTS.TEAM1) - (wide$pts.TEAM2 - wide$HALF_PTS.TEAM2)
 wide$secondHalfPts<-(wide$pts.TEAM1 - wide$HALF_PTS.TEAM1) + (wide$pts.TEAM2 - wide$HALF_PTS.TEAM2)
 wide$Over<-wide$secondHalfPts > wide$LINE_HALF.TEAM1
+wide$totalPts <- wide$pts.TEAM1 + wide$pts.TEAM2
+wide$totalOver <- wide$totalPts > wide$LINE.TEAM1
+
 
 wide$PA1<-as.numeric(papg[match(wide$TEAM1.TEAM1, papg$team),]$pa)
 wide$PA2<-as.numeric(papg[match(wide$TEAM2.TEAM2, papg$team),]$pa)
 wide$PF1<-as.numeric(papg[match(wide$TEAM1.TEAM1, papg$team),]$pf)
 wide$PF2<-as.numeric(papg[match(wide$TEAM2.TEAM2, papg$team),]$pf)
-boxscores$key <- paste(boxscores$game_id, boxscores$team)
-all<-merge(boxscores, ncaafinal, by="key")
-all$secondHalfPts <- all$pts.y - all$pts.x
+#boxscores$key <- paste(boxscores$game_id, boxscores$team)
+#all<-merge(boxscores, ncaafinal, by="key")
+#all$secondHalfPts <- all$pts.y - all$pts.x
 
-
+r <- randomForest(as.factor(totalOver) ~ LINE_CHANGE.TEAM1 * LINE.TEAM1 * PA1 * PA2 * PF1 * PF2, data=wide)
 #r <- randomForest(as.factor(Over) ~ PA1 + PA2 + PF1 + PF2 + LINE_HALF.TEAM1 + HALF_PTS.TEAM1 + HALF_PTS.TEAM2, data=wide)
 #save(r, "randomForestModel.Rdat")
 
@@ -250,6 +265,8 @@ result$chd_toU[is.na(result$chd_toU)] <- 0
 result$underSum <- result$fullSpreadU + result$mwtU + result$chd_fgU + result$chd_fgmU + result$chd_tpmU + result$chd_ftmU + result$chd_toU
 
 result <- result[-which(is.na(result$SPREAD_HALF.TEAM1) | is.na(result$underSum)),]
+result <- result[, c(1:29, 39:76)]
+
 
 r<- randomForest(formula = as.factor(Over) ~ half_diff.TEAM1 +  TO.TEAM1 + SEASON_PPG.TEAM1 + SPREAD_HALF.TEAM1 + mwt.TEAM1 +  SEASON_PPG.TEAM2 + fullSpreadU + chd_ftmU + mwtO, data=result)
 

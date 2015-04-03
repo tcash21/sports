@@ -1,3 +1,4 @@
+library(plyr)
 library(RSQLite)
 library(sendmailR)
 
@@ -20,13 +21,14 @@ game_time from ", tables[[i]], " group by away_team, home_team, game_date;"))
 }
 
 halflines <- lDataFrames[[1]]
-games <- lDataFrames[[3]]
-lines <- lDataFrames[[4]]
-teamstats <- lDataFrames[[5]]
-boxscores <- lDataFrames[[7]]
-lookup <- lDataFrames[[8]]
-nbafinal <- lDataFrames[[2]]
-seasontotals <- lDataFrames[[6]]
+games <- lDataFrames[[6]]
+lines <- lDataFrames[[7]]
+teamstats <- lDataFrames[[8]]
+boxscores <- lDataFrames[[10]]
+lookup <- lDataFrames[[11]]
+nbafinal <- lDataFrames[[5]]
+seasontotals <- lDataFrames[[9]]
+
 
 b<-apply(boxscores[,3:5], 2, function(x) strsplit(x, "-"))
 boxscores$fgm <- do.call("rbind",b$fgma)[,1]
@@ -118,7 +120,73 @@ colnames(final)[36:46] <- c("SEASON_GP", "SEASON_PPG", "SEASON_ORPG", "SEASON_DE
 #final$GAME_DATE<-games[match(final$GAME_ID, games$game_id),]$game_date
 final<-final[order(final$GAME_DATE, decreasing=TRUE),]
 
-write.csv(final, file="/home/ec2-user/sports/testfile.csv", row.names=FALSE)
+final$LINE_HALF <- as.numeric(final$LINE_HALF)
+final$LINE <- as.numeric(final$LINE)
+final$COVERS_UPDATE<-as.character(final$COVERS_UPDATE)
+final<-ddply(final, .(GAME_ID), transform, mwt=HALF_PTS[1] + HALF_PTS[2] + LINE_HALF - LINE)
+final <- ddply(final, .(GAME_ID), transform, half_diff=HALF_PTS[1] - HALF_PTS[2])
+
+## transform to numerics
+final[,2:16]<-apply(final[,2:16], 2, as.numeric)
+final[,18:32]<-apply(final[,18:32], 2, as.numeric)
+final[,c(36:46)]<-apply(final[,c(36:46)], 2, as.numeric)
+final[,c(50:68)]<-apply(final[,c(50:68)], 2, as.numeric)
+
+
+## Team1 and Team2 Halftime Differentials
+final$fg_percent <- ((final$HALF_FGM / final$HALF_FGA) - (final$SEASON_FGM / final$SEASON_FGA) - .01)
+final$fg_percent_noadjustment <- (final$HALF_FGM / final$HALF_FGA) - (final$SEASON_FGM / final$SEASON_FGA)
+final$FGM <- (final$HALF_FGM - (final$SEASON_FGM / 2))
+final$TPM <- (final$HALF_3PM - (final$SEASON_3PM / 2))
+final$FTM <- (final$HALF_FTM - (final$SEASON_FTM /  2 - 1))
+final$TO <- (final$HALF_TO - (final$SEASON_ATO / 2))
+final$OREB <- (final$HALF_OREB - (final$SEASON_ORPG / 2))
+
+## Cumulative Halftime Differentials
+final$chd_fg <- ddply(final, .(GAME_ID), transform, chd_fg = (fg_percent[1] + fg_percent[2]) / 2)$chd_fg
+final$chd_fgm <- ddply(final, .(GAME_ID), transform, chd_fgm = (FGM[1] + FGM[2]) / 2)$chd_fgm
+final$chd_tpm <- ddply(final, .(GAME_ID), transform, chd_tpm = (TPM[1] + TPM[2]) / 2)$chd_tpm
+final$chd_ftm <- ddply(final, .(GAME_ID), transform, chd_ftm = (FTM[1] + FTM[2]) / 2)$chd_ftm
+final$chd_to <- ddply(final, .(GAME_ID), transform, chd_to = (TO[1] + TO[1]) / 2)$chd_to
+final$chd_oreb <- ddply(final, .(GAME_ID), transform, chd_oreb = (OREB[1] + OREB[2]) / 2)$chd_oreb
+
+## Add Criteria for Over/Under
+result <- final
+result$mwtO <- as.numeric(result$mwt < 7.1 & result$mwt > -3.9)
+result$chd_fgO <- as.numeric(result$chd_fg < .15 & result$chd_fg > -.07)
+result$chd_fgmO <- as.numeric(result$chd_fgm < -3.9)
+result$chd_tpmO <- as.numeric(result$chd_tpm < -1.9)
+result$chd_ftmO <- as.numeric(result$chd_ftm < -.9)
+result$chd_toO <- as.numeric(result$chd_to < -1.9)
+
+result$mwtO[is.na(result$mwtO)] <- 0
+result$chd_fgO[is.na(result$chd_fgO)] <- 0
+result$chd_fgmO[is.na(result$chd_fgmO)] <- 0
+result$chd_tpmO[is.na(result$chd_tpmO)] <- 0
+result$chd_ftmO[is.na(result$chd_ftmO)] <- 0
+result$chd_toO[is.na(result$chd_toO)] <- 0
+result$overSum <- result$mwtO + result$chd_fgO + result$chd_fgmO + result$chd_tpmO + result$chd_ftmO + result$chd_toO
+
+result$fullSpreadU <- as.numeric(abs(as.numeric(result$SPREAD)) > 10.9)
+result$mwtU <- as.numeric(result$mwt > 7.1)
+result$chd_fgU <- as.numeric(result$chd_fg > .15 | result$chd_fg < -.07)
+result$chd_fgmU <- 0
+result$chd_tpmU <- 0
+result$chd_ftmU <- as.numeric(result$chd_ftm > -0.9)
+result$chd_toU <- as.numeric(result$chd_to > -1.9)
+
+result$mwtU[is.na(result$mwtU)] <- 0
+result$chd_fgO[is.na(result$chd_fgU)] <- 0
+result$chd_fgmU[is.na(result$chd_fgmU)] <- 0
+result$chd_tpmU[is.na(result$chd_tpmU)] <- 0
+result$chd_ftmU[is.na(result$chd_ftmU)] <- 0
+result$chd_toU[is.na(result$chd_toU)] <- 0
+result$underSum <- result$fullSpreadU + result$mwtU + result$chd_fgU + result$chd_fgmU + result$chd_tpmU + result$chd_ftmU + result$chd_toU
+
+result$SECOND_HALF_PTS <- result$FINAL_PTS - result$HALF_PTS
+result$Over<- ddply(result, .(GAME_ID), transform, over=sum(SECOND_HALF_PTS) > LINE_HALF)$over
+
+write.csv(result, file="/home/ec2-user/sports/testfile.csv", row.names=FALSE)
 
 sendmailV <- Vectorize( sendmail , vectorize.args = "to" )
 emails <- c( "<tanyacash@gmail.com>" , "<malloyc@yahoo.com>", "<sschopen@gmail.com>")

@@ -23,33 +23,25 @@ time.sleep(x)
 def index():
     print "entered index"
     times = []
-    final_ids = []
     today = date.today() - timedelta(days=1)
     today = today.strftime("%Y%m%d")
     url = urllib2.urlopen('http://scores.espn.go.com/nba/scoreboard?date=' + today)
     soup = bs(url.read(), ['fast', 'lxml'])
     #soup = bs(open('testPage1.html'))
     game_status = soup.findAll('p', id=re.compile('\d+-statusLine'))
-    links = soup.findAll('a', href=re.compile('/nba/boxscore.*'))
-    urls = [link.get('href') for link in links]
-    matches=[re.search('gameId=(\d+)', u) for u in urls]
-    ids = [m.group(1) for m in matches]
-    #current_week = soup.find('div', {'class':'sc_logo'}).nextSibling.text
-    #rx = re.compile('(1st|2nd')
-    ht = re.compile('Final')
-
-    ## get final updates
-    for game in game_status:
-        if (re.search(ht, game.text) and re.search("(\d+)", game["id"]).group() not in final_ids):
-            final_ids.append(re.search("(\d+)", game["id"]).group())
+    
+    scoreboard=soup.findAll('div', {'id': 'scoreboard-page'})
+    data=scoreboard[0].get('data-data')
+    ids = re.findall('http://espn.go.com/nba/boxscore\?gameId=(\d+)', data)
+    
     league = 'nba'
-    if(len(final_ids) == 0):
+    if(len(ids) == 0):
         print "No Final Box Scores yet."
     else:
-        for i in range(0, len(final_ids)):
+        for i in range(0, len(ids)):
             x=random.randint(3,10)
             time.sleep(x)
-            espn = 'http://scores.espn.go.com/' + league + '/boxscore?gameId=' + final_ids[i]
+            espn = 'http://scores.espn.go.com/' + league + '/boxscore?gameId=' + ids[i]
             url = urllib2.urlopen(espn)
             soup = bs(url.read(), ['fast', 'lxml'])
             #soup = bs(open('testPage2.html'))
@@ -88,8 +80,8 @@ def index():
                 cleaned2 = [j for k, j in enumerate(values) if k not in remove_indices]
                 cleaned1.insert(0, team1)
                 cleaned2.insert(0, team2)
-                cleaned1.insert(0, final_ids[i])
-                cleaned2.insert(0, final_ids[i])
+                cleaned1.insert(0, ids[i])
+                cleaned2.insert(0, ids[i])
                 cleaned1.pop()
                 cleaned1.pop()
                 cleaned1.pop()
@@ -98,13 +90,13 @@ def index():
                 cleaned2.pop()
                 try:
                     date_time = str(datetime.now())
-                    db.execute('''INSERT INTO NBAfinalstats(game_id, team, fgma, tpma, ftma, oreb, dreb, reb, ast, stl, blk, turnovers, pf, pts, timestamp ) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)''', (final_ids[i], team1, cleaned1[2], cleaned1[3], cleaned1[4], int(cleaned1[5]), int(cleaned1[6]), int(cleaned1[7]), int(cleaned1[8]), int(cleaned1[9]), int(cleaned1[10]), int(cleaned1[11]), int(cleaned1[12]), int(cleaned1[14]), date_time))
+                    db.execute('''INSERT INTO NBAfinalstats(game_id, team, fgma, tpma, ftma, oreb, dreb, reb, ast, stl, blk, turnovers, pf, pts, timestamp ) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)''', (ids[i], team1, cleaned1[2], cleaned1[3], cleaned1[4], int(cleaned1[5]), int(cleaned1[6]), int(cleaned1[7]), int(cleaned1[8]), int(cleaned1[9]), int(cleaned1[10]), int(cleaned1[11]), int(cleaned1[12]), int(cleaned1[14]), date_time))
                     db.commit()
                 except sqlite3.IntegrityError:
                     print sqlite3.Error
                 try:
                     date_time = str(datetime.now())
-                    db.execute('''INSERT INTO NBAfinalstats(game_id, team, fgma, tpma, ftma, oreb, dreb, reb, ast, stl, blk, turnovers, pf, pts, timestamp ) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)''', (final_ids[i], team2, cleaned2[2], cleaned2[3], cleaned2[4], int(cleaned2[5]), int(cleaned2[6]), int(cleaned2[7]), int(cleaned2[8]), int(cleaned2[9]), int(cleaned2[10]), int(cleaned2[11]), int(cleaned2[12]), int(cleaned2[14]), date_time))
+                    db.execute('''INSERT INTO NBAfinalstats(game_id, team, fgma, tpma, ftma, oreb, dreb, reb, ast, stl, blk, turnovers, pf, pts, timestamp ) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)''', (ids[i], team2, cleaned2[2], cleaned2[3], cleaned2[4], int(cleaned2[5]), int(cleaned2[6]), int(cleaned2[7]), int(cleaned2[8]), int(cleaned2[9]), int(cleaned2[10]), int(cleaned2[11]), int(cleaned2[12]), int(cleaned2[14]), date_time))
                     db.commit()
                 except sqlite3.IntegrityError:
                     print sqlite3.Error

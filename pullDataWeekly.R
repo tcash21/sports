@@ -20,14 +20,16 @@ game_time from ", tables[[i]], " group by away_team, home_team, game_date;"))
   cat(tables[[i]], ":", i, "\n")
 }
 
-halflines <- lDataFrames[[9]]
-games <- lDataFrames[[11]]
-lines <- lDataFrames[[12]]
-teamstats <- lDataFrames[[13]]
-boxscores <- lDataFrames[[15]]
-lookup <- lDataFrames[[16]]
-ncaafinal <- lDataFrames[[10]]
-seasontotals <- lDataFrames[[14]]
+halflines <- lDataFrames[[12]]
+games <- lDataFrames[[17]]
+lines <- lDataFrames[[18]]
+teamstats <- lDataFrames[[19]]
+boxscores <- lDataFrames[[21]]
+lookup <- lDataFrames[[22]]
+ncaafinal <- lDataFrames[[16]]
+seasontotals <- lDataFrames[[20]]
+papg <- lDataFrames[[24]]
+
 
 b<-apply(boxscores[,3:5], 2, function(x) strsplit(x, "-"))
 boxscores$fgm <- do.call("rbind",b$fgma)[,1]
@@ -131,7 +133,7 @@ final[,c(38,41:63)]<-apply(final[,c(38,41:63)], 2, as.numeric)
 
 
 ## Team1 and Team2 Halftime Differentials
-final$fg_percent <- ((final$HALF_FGM / final$HALF_FGA) - (final$SEASON_FGM / final$SEASON_FGA))
+final$fg_percent <- ((final$HALF_FGM / final$HALF_FGA) - (final$SEASON_FGM / final$SEASON_FGA) - .01)
 final$fg_percent_noadjustment <- (final$HALF_FGM / final$HALF_FGA) - (final$SEASON_FGM / final$SEASON_FGA)
 final$FGM <- (final$HALF_FGM - (final$SEASON_FGM / final$SEASON_GP / 2))
 final$TPM <- (final$HALF_3PM - (final$SEASON_3PM / final$SEASON_GP / 2))
