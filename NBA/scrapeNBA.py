@@ -28,19 +28,11 @@ def index():
     url = urllib2.urlopen('http://scores.espn.go.com/nba/scoreboard?date=' + today)
     soup = bs(url.read(), ['fast', 'lxml'])
     #soup = bs(open('testPage1.html'))
-    game_status = soup.findAll('p', id=re.compile('\d+-statusLine'))
-    links = soup.findAll('a', href=re.compile('/nba/boxscore.*'))
-    urls = [link.get('href') for link in links]
-    matches=[re.search('gameId=(\d+)', u) for u in urls]
-    ids = [m.group(1) for m in matches]
-    #current_week = soup.find('div', {'class':'sc_logo'}).nextSibling.text
-    #rx = re.compile('(1st|2nd')
-    ht = re.compile('Half')
+    scoreboard=soup.findAll('div', {'id': 'scoreboard-page'})
+    data=scoreboard[0].get('data-data')
+    halftime_ids = re.findall('http://espn.go.com/nba/boxscore\?gameId=(\d+)', data)
 
-    ## freeze updates at the half
-    for game in game_status:
-        if (re.search(ht, game.text) and re.search("(\d+)", game["id"]).group() not in halftime_ids):
-            halftime_ids.append(re.search("(\d+)", game["id"]).group())
+
     league = 'nba'
     if(len(halftime_ids) == 0):
         print "No Halftime Box Scores yet."

@@ -197,8 +197,8 @@ result$Over<- ddply(result, .(GAME_ID), transform, over=sum(SECOND_HALF_PTS) > L
 write.csv(result, file="/home/ec2-user/sports/testfile.csv", row.names=FALSE)
 
 sendmailV <- Vectorize( sendmail , vectorize.args = "to" )
-emails <- c( "<tanyacash@gmail.com>" , "<malloyc@yahoo.com>", "<sschopen@gmail.com>")
-#emails <- c("<tanyacash@gmail.com>")
+#emails <- c( "<tanyacash@gmail.com>" , "<malloyc@yahoo.com>", "<sschopen@gmail.com>")
+emails <- c("<tanyacash@gmail.com>")
 
 from <- "<tanyacash@gmail.com>"
 subject <- "NCAA Data - all data"

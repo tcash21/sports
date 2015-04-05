@@ -19,7 +19,9 @@ time.sleep(x)
 
 url = urllib2.urlopen('https://www.sportsbook.ag/sbk/sportsbook4/nba-betting/nba-game-lines.sbk')
 soup = bs(url.read(), ['fast', 'lxml'])
-divs=soup.findAll('div', {'class':'col-sm-12 eventbox'})
+the_date = date.today()
+
+divs=soup.findAll('div', id=re.compile( the_date.strftime("%m%d%y"))
 awayTeams=[d.findAll('span', {'id':'awayTeamName'}) for d in divs]
 homeTeams=[d.findAll('span', {'id':'homeTeamName'}) for d in divs]
 awayTeams=[a[0].text for a in awayTeams]
