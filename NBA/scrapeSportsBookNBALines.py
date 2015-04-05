@@ -21,13 +21,16 @@ url = urllib2.urlopen('https://www.sportsbook.ag/sbk/sportsbook4/nba-betting/nba
 soup = bs(url.read(), ['fast', 'lxml'])
 the_date = date.today()
 
-divs=soup.findAll('div', id=re.compile( the_date.strftime("%m%d%y"))
+divs=soup.findAll('div', id=re.compile( the_date.strftime("%m%d%y")))
 awayTeams=[d.findAll('span', {'id':'awayTeamName'}) for d in divs]
 homeTeams=[d.findAll('span', {'id':'homeTeamName'}) for d in divs]
+awayTeams.pop(0)
+homeTeams.pop(0)
 awayTeams=[a[0].text for a in awayTeams]
 homeTeams=[h[0].text for h in homeTeams]
 
 market=[d.findAll('div', {'class':'market'}) for d in divs]
+market.pop(0)
 the_lines=[m[0].text for m in market]
 the_spreads=[m[1].text for m in market]
 
