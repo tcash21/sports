@@ -11,16 +11,18 @@ lDataFrames <- vector("list", length=length(tables))
 
 ## create a data.frame for each table
 for (i in seq(along=tables)) {
-  if(tables[[i]] == 'NBAHalflines' | tables[[i]] == 'NBAlines'){
-  lDataFrames[[i]] <- dbGetQuery(conn=con, statement=paste("SELECT away_team, home_team, game_date, line, spread, max(game_time) as 
-game_time from ", tables[[i]], " group by away_team, home_team, game_date;"))
+  if(tables[[i]] == 'NBAHalflines' | tables[[i]] == 'NBAlines' | tables[[i]] == 'NBASBLines' | tables[[i]] == 'NBASBHalfLines'){
+   lDataFrames[[i]] <- dbGetQuery(conn=con, statement=paste0("SELECT n.away_team, n.home_team, n.game_date, n.line, n.spread, n.game_time from '", tables[[i]], "' n inner join
+  (select game_date, away_team,home_team, max(game_time) as mgt from '", tables[[i]], "' group by game_date, away_team, home_team) s2 on s2.game_date = n.game_date and
+  s2.away_team = n.away_team and s2.home_team = n.home_team and n.game_time = s2.mgt;"))
+
   } else {
   	lDataFrames[[i]] <- dbGetQuery(conn=con, statement=paste("SELECT * FROM '", tables[[i]], "'", sep=""))
   }
   cat(tables[[i]], ":", i, "\n")
 }
 
-halflines <- lDataFrames[[1]]
+halflines <- rbind(lDataFrames[[1]], lDataFrames[[2]])
 games <- lDataFrames[[6]]
 lines <- lDataFrames[[7]]
 teamstats <- lDataFrames[[8]]
@@ -41,7 +43,6 @@ boxscores <- boxscores[,c(1,2,16:21,6:15)]
 
 m1<-merge(boxscores, games, by="game_id")
 m1$key <- paste(m1$team, m1$game_date)
-teamstats$team<-lookup[match(teamstats$team, lookup$espn_name),]$espn_abbr
 teamstats$key <- paste(teamstats$team, teamstats$the_date)
 m2<-merge(m1, teamstats, by="key")
 lookup$away_team <- lookup$covers_team
@@ -58,6 +59,7 @@ colnames(m3a)[49] <- "CoversTotalLineUpdateTime"
 colnames(m3h)[49] <- "CoversTotalLineUpdateTime"
 
 ## Halftime Lines
+halflines <- halflines[-which(halflines$line == "OFF"),]
 la2<-merge(lookup, halflines, by="away_team")
 lh2<-merge(lookup, halflines, by="home_team")
 la2$key <- paste(la2$espn_abbr, la2$game_date)
@@ -108,7 +110,7 @@ colnames(seasontotals)[2] <- "GAME_DATE"
 #today <- format(Sys.Date(), "%m/%d/%Y")
 #seasontotals <- subset(seasontotals, GAME_DATE == today)
 final$key <- paste(final$GAME_DATE, final$TEAM)
-seasontotals$TEAM<-lookup[match(seasontotals$TEAM, lookup$espn_name),]$espn_abbr
+#seasontotals$TEAM<-match(seasontotals$TEAM, lookup$espn_name)
 seasontotals$key <- paste(seasontotals$GAME_DATE, seasontotals$TEAM)
 
 x<-merge(seasontotals, final, by=c("key"))
