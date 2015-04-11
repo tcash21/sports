@@ -24,8 +24,11 @@ awayTeams=[d.findAll('span', {'id':'awayTeamName'}) for d in divs]
 homeTeams=[d.findAll('span', {'id':'homeTeamName'}) for d in divs]
 awayTeams=[a[0].text for a in awayTeams]
 homeTeams=[h[0].text for h in homeTeams]
+awayTeams=filter(len, awayTeams)
+homeTeams=filter(len, homeTeams)
 
 market=[d.findAll('div', {'class':'market'}) for d in divs]
+market=filter(len, market)
 the_lines=[m[0].text for m in market]
 the_spreads=[m[1].text for m in market]
 

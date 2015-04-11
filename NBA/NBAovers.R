@@ -62,4 +62,7 @@ x<-merge(all, final,by=c("game_id"))
 y<-ddply(x, .(key), transform, total=sum(pts[1]+pts[2]))
 y$over <- y$total > y$line
 
+y$positive <- y$line_change > 0
+y[which(y$positive == TRUE),]$positive <- "POSITIVE"
+y[which(y$positive == FALSE),]$positive <- "NEGATIVE"
 
