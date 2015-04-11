@@ -67,5 +67,10 @@ y[which(y$positive == TRUE),]$positive <- "POSITIVE"
 y[which(y$positive == FALSE),]$positive <- "NEGATIVE"
 
 y$over <- as.factor(y$over)
-r <- randomForest(over ~ numChanges * line_change , data=y)
+y <- y[seq(1,dim(y)[1], by=2),]
+y$away_team<-as.factor(y$away_team)
+y$home_team <- as.factor(y$home_team)
+y$positive<-as.factor(y$positive)
+
+r <- randomForest(over ~ numChanges + line_change + positive, data=y)
 save(r, file="NBATotalOversModel.Rdat")

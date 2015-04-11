@@ -1,5 +1,6 @@
 __author__ = 'tanyacashorali'
 
+import jsonpickle
 import random
 import urllib2
 import time
@@ -30,8 +31,13 @@ def index():
     #soup = bs(open('testPage1.html'))
     scoreboard=soup.findAll('div', {'id': 'scoreboard-page'})
     data=scoreboard[0].get('data-data')
-    halftime_ids = re.findall('http://espn.go.com/nba/boxscore\?gameId=(\d+)', data)
-
+    j=jsonpickle.decode(data)
+    games=j['events']
+    status = [game['status'] for game in games]
+    half = [s['type']['shortDetail'] for s in status]
+    index = [i for i, j in enumerate(half) if j == 'Halftime']
+    ids = [game['id'] for game in games]
+    halftime_ids = [j for k, j in enumerate(ids) if k in index]
 
     league = 'nba'
     if(len(halftime_ids) == 0):

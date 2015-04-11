@@ -22,12 +22,15 @@ for (i in seq(along=tables)) {
   cat(tables[[i]], ":", i, "\n")
 }
 
-halflines <- rbind(lDataFrames[[1]], lDataFrames[[2]])
+#halflines <- lDataFrames[[1]]
+halflines <- lDataFrames[[2]]
 games <- lDataFrames[[6]]
-lines <- lDataFrames[[7]]
+#lines <- lDataFrames[[7]]
+lines <- lDataFrames[[3]]
 teamstats <- lDataFrames[[8]]
 boxscores <- lDataFrames[[10]]
-lookup <- lDataFrames[[11]]
+#lookup <- lDataFrames[[11]]
+lookup <- lDataFrames[[4]]
 nbafinal <- lDataFrames[[5]]
 seasontotals <- lDataFrames[[9]]
 
@@ -45,8 +48,8 @@ m1<-merge(boxscores, games, by="game_id")
 m1$key <- paste(m1$team, m1$game_date)
 teamstats$key <- paste(teamstats$team, teamstats$the_date)
 m2<-merge(m1, teamstats, by="key")
-lookup$away_team <- lookup$covers_team
-lookup$home_team <- lookup$covers_team
+lookup$away_team <- lookup$sb_team
+lookup$home_team <- lookup$sb_team
 
 ## Total Lines
 la<-merge(lookup, lines, by="away_team")
@@ -59,7 +62,7 @@ colnames(m3a)[49] <- "CoversTotalLineUpdateTime"
 colnames(m3h)[49] <- "CoversTotalLineUpdateTime"
 
 ## Halftime Lines
-halflines <- halflines[-which(halflines$line == "OFF"),]
+##halflines <- halflines[-which(halflines$line == "OFF"),]
 la2<-merge(lookup, halflines, by="away_team")
 lh2<-merge(lookup, halflines, by="home_team")
 la2$key <- paste(la2$espn_abbr, la2$game_date)
@@ -185,14 +188,24 @@ result$chd_ftmU[is.na(result$chd_ftmU)] <- 0
 result$chd_toU[is.na(result$chd_toU)] <- 0
 result$underSum <- result$fullSpreadU + result$mwtU + result$chd_fgU + result$chd_fgmU + result$chd_tpmU + result$chd_ftmU + result$chd_toU
 
-result$SECOND_HALF_PTS <- result$FINAL_PTS - result$HALF_PTS
-result$Over<- ddply(result, .(GAME_ID), transform, over=sum(SECOND_HALF_PTS) > LINE_HALF)$over
+result<-result[order(result$GAME_ID),]
+result$team <- ""
+result[seq(from=1, to=dim(result)[1], by=2),]$team <- "TEAM1"
+result[seq(from=2, to=dim(result)[1], by=2),]$team <- "TEAM2"
+wide<-reshape(result, direction = "wide", idvar="GAME_ID", timevar="team")
+wide$secondHalfPts.TEAM1 <- wide$FINAL_PTS.TEAM1 - wide$HALF_PTS.TEAM1
+wide$secondHalfPts.TEAM2 <- wide$FINAL_PTS.TEAM2 - wide$HALF_PTS.TEAM2
+wide$secondHalfPtsTotal <- wide$secondHalfPts.TEAM1 + wide$secondHalfPts.TEAM2
+#result$SECOND_HALF_PTS <- result$FINAL_PTS - result$HALF_PTS
+#result$Over<- ddply(result, .(GAME_ID), transform, over=sum(SECOND_HALF_PTS) > LINE_HALF)$over
+wide$Over<-wide$secondHalfPtsTotal > wide$LINE_HALF.TEAM1
 
-write.csv(result, file="/home/ec2-user/sports/testfile.csv", row.names=FALSE)
+
+write.csv(wide, file="/home/ec2-user/sports/testfile.csv", row.names=FALSE)
 
 sendmailV <- Vectorize( sendmail , vectorize.args = "to" )
-emails <- c( "<tanyacash@gmail.com>" , "<malloyc@yahoo.com>", "<sschopen@gmail.com>")
-#emails <- c("<tanyacash@gmail.com>")
+#emails <- c( "<tanyacash@gmail.com>" , "<malloyc@yahoo.com>", "<sschopen@gmail.com>")
+emails <- c("<tanyacash@gmail.com>")
 
 from <- "<tanyacash@gmail.com>"
 subject <- "Weekly NBA Data Report"
