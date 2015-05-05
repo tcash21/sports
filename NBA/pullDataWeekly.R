@@ -22,15 +22,15 @@ for (i in seq(along=tables)) {
   cat(tables[[i]], ":", i, "\n")
 }
 
-#halflines <- lDataFrames[[1]]
-halflines <- lDataFrames[[2]]
+halflines <- lDataFrames[[1]]
+#halflines <- lDataFrames[[2]]
 games <- lDataFrames[[6]]
-#lines <- lDataFrames[[7]]
-lines <- lDataFrames[[3]]
+lines <- lDataFrames[[7]]
+#lines <- lDataFrames[[3]]
 teamstats <- lDataFrames[[8]]
 boxscores <- lDataFrames[[10]]
-#lookup <- lDataFrames[[11]]
-lookup <- lDataFrames[[4]]
+lookup <- lDataFrames[[11]]
+#lookup <- lDataFrames[[4]]
 nbafinal <- lDataFrames[[5]]
 seasontotals <- lDataFrames[[9]]
 
@@ -48,8 +48,8 @@ m1<-merge(boxscores, games, by="game_id")
 m1$key <- paste(m1$team, m1$game_date)
 teamstats$key <- paste(teamstats$team, teamstats$the_date)
 m2<-merge(m1, teamstats, by="key")
-lookup$away_team <- lookup$sb_team
-lookup$home_team <- lookup$sb_team
+lookup$away_team <- lookup$covers_team
+lookup$home_team <- lookup$covers_team
 
 ## Total Lines
 la<-merge(lookup, lines, by="away_team")

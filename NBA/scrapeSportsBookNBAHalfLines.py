@@ -17,7 +17,8 @@ db = sqlite3.connect('/home/ec2-user/sports/sports.db')
 x=random.randint(1, 20)
 time.sleep(x)
 
-url = urllib2.urlopen('https://www.sportsbook.ag/sbk/sportsbook4/nba-betting/nba-2nd-half-lines.sbk')
+#url = urllib2.urlopen('https://www.sportsbook.ag/sbk/sportsbook4/nba-betting/nba-2nd-half-lines.sbk')
+url = urllib2.urlopen('https://www.sportsbook.ag/sbk/sportsbook4/nba-playoffs-betting/nba-2nd-half-lines.sbk')
 soup = bs(url.read(), ['fast', 'lxml'])
 divs=soup.findAll('div', {'class':'col-sm-12 eventbox'})
 awayTeams=[d.findAll('span', {'id':'awayTeamName'}) for d in divs]
@@ -38,7 +39,7 @@ spreads = []
 for i in range(0, len(the_lines)):
     try:
         lines.append(re.search('(\d+\\.?\d+)\\(', the_lines[i]).group(1))
-        spreads.append(re.search('([+-]\d+\\.?\d?)\\(', the_spreads[i]).group(1))
+        spreads.append(re.search('([+-]?\d+\\.?\d?)\\(', the_spreads[i]).group(1))
     except:
         next
 

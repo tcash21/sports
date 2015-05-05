@@ -17,7 +17,8 @@ db = sqlite3.connect('/home/ec2-user/sports/sports.db')
 x=random.randint(1, 20)
 time.sleep(x)
 
-url = urllib2.urlopen('https://www.sportsbook.ag/sbk/sportsbook4/nba-betting/nba-game-lines.sbk')
+#url = urllib2.urlopen('https://www.sportsbook.ag/sbk/sportsbook4/nba-betting/nba-game-lines.sbk')
+url = urllib2.urlopen('https://www.sportsbook.ag/sbk/sportsbook4/nba-playoffs-betting/nba-game-lines.sbk')
 soup = bs(url.read(), ['fast', 'lxml'])
 the_date = date.today()
 

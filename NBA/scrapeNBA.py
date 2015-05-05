@@ -57,6 +57,8 @@ def index():
             t=time.strptime(the_date, "%B %d, %Y")
             gdate=time.strftime('%m/%d/%Y', t)
             boxscore = soup.find('table', {'class':'mod-data'})
+            strong = soup.find_all('strong', text=re.compile('Officials')          
+            officials = strong[0].next_sibling
             try: 
                 theads=boxscore.findAll('thead')
                 the_thead = None
@@ -95,7 +97,7 @@ def index():
                 cleaned2.pop()
                 try:
                     with db:
-                        db.execute('''INSERT INTO NBAgames(game_id, team1, team2, game_date, game_time) VALUES(?,?,?,?,?)''', (halftime_ids[i], team1, team2, gdate, game_time))
+                        db.execute('''INSERT INTO NBAgames(game_id, team1, team2, game_date, game_time, officials) VALUES(?,?,?,?,?,?)''', (halftime_ids[i], team1, team2, gdate, game_time, officials))
                         db.commit()
                     try:
                         date_time = str(datetime.datetime.now())
