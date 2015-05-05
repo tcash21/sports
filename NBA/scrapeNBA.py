@@ -57,7 +57,7 @@ def index():
             t=time.strptime(the_date, "%B %d, %Y")
             gdate=time.strftime('%m/%d/%Y', t)
             boxscore = soup.find('table', {'class':'mod-data'})
-            strong = soup.find_all('strong', text=re.compile('Officials')          
+            strong = soup.find_all('strong', text=re.compile('Officials'))
             officials = strong[0].next_sibling
             try: 
                 theads=boxscore.findAll('thead')
