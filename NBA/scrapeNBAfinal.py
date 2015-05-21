@@ -30,9 +30,9 @@ def index():
     #soup = bs(open('testPage1.html'))
     #game_status = soup.findAll('p', id=re.compile('\d+-statusLine'))
     
-    scoreboard=soup.findAll('div', {'id': 'scoreboard-page'})
-    data=scoreboard[0].get('data-data')
-    ids = re.findall('http://espn.go.com/nba/boxscore\?gameId=(\d+)', data)
+    #scoreboard=soup.findAll('div', {'id': 'scoreboard-page'})
+    #data=scoreboard[0].get('data-data')
+    ids = re.findall('http://espn.go.com/nba/boxscore\?gameId=(\d+)', str(soup))
     
     league = 'nba'
     if(len(ids) == 0):

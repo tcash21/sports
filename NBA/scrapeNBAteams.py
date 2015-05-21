@@ -26,9 +26,9 @@ def index():
     today = today.strftime("%Y%m%d")
     url = urllib2.urlopen('http://scores.espn.go.com/nba/scoreboard?date=' + today)
     soup = bs(url.read(), ['fast', 'lxml'])
-    scoreboard=soup.findAll('div', {'id': 'scoreboard-page'})
-    data=scoreboard[0].get('data-data')
-    teams = re.findall('http://espn.go.com/nba/team/_/name/(\w+)', data)
+    #scoreboard=soup.findAll('div', {'id': 'scoreboard-page'})
+    #data=scoreboard[0].get('data-data')
+    teams = re.findall('http://espn.go.com/nba/team/_/name/(\w+)', str(soup))
 
     for i in range(0, len(teams)):
         x=random.randint(5, 10)
