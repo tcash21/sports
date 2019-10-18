@@ -1,4 +1,4 @@
-Flask==0.9
+Flask==1.0
 Cheetah==2.4.1
 Cython==0.21.1
 FAST==2.5
