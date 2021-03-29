@@ -4,7 +4,7 @@ Cython==0.21.1
 FAST==2.5
 Markdown==2.4.1
 PyYAML==3.10
-Pygments==1.4
+Pygments==2.7.4
 argparse==1.2.1
 awscli==1.5.1
 backports.ssl-match-hostname==3.4.0.2
